@@ -1,0 +1,36 @@
+name: Factory GitHub App auth
+description: >
+  Mints a GitHub App installation token and sets the git identity to the App's
+  bot. PRs opened with this token trigger CI (GITHUB_TOKEN PRs do not; that is
+  what stalled yeschef #28). The token is only exposed as a step output: never
+  put it in the environment of a step that runs Claude.
+inputs:
+  app-id:
+    required: true
+  private-key:
+    required: true
+outputs:
+  token:
+    value: ${{ steps.token.outputs.token }}
+  bot-login:
+    value: ${{ steps.identity.outputs.login }}
+runs:
+  using: composite
+  steps:
+    - id: token
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+
+    - id: identity
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.token.outputs.token }}
+        SLUG: ${{ steps.token.outputs.app-slug }}
+      run: |
+        login="${SLUG}[bot]"
+        id=$(gh api "/users/${SLUG}%5Bbot%5D" --jq .id)
+        git config --global user.name "$login"
+        git config --global user.email "${id}+${login}@users.noreply.github.com"
+        echo "login=$login" >> "$GITHUB_OUTPUT"

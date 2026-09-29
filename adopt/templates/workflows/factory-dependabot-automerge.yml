@@ -1,0 +1,15 @@
+# Managed by laravel-factory adopt.sh. Edit the factory, not this file.
+name: dependabot-automerge
+
+on: pull_request
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  automerge:
+    uses: jasonevans1/laravel-factory/.github/workflows/dependabot-automerge.yml@__FACTORY_REF__
+    secrets:
+      FACTORY_APP_ID: ${{ secrets.FACTORY_APP_ID }}
+      FACTORY_APP_PRIVATE_KEY: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}

@@ -1,0 +1,66 @@
+name: Claude fallback
+description: >
+  Runs Claude Code headless on the Pro/Max subscription token, and only that.
+  Credential boundary: this step's environment holds CLAUDE_CODE_OAUTH_TOKEN and
+  nothing else sensitive. No GitHub token, no API key; the checkout was made with
+  persist-credentials: false, so Claude cannot push or call the GitHub API.
+  Claude does not commit and does not judge its own success: the calling
+  workflow commits and runs the deterministic post-checks.
+inputs:
+  prompt:
+    description: Task prompt
+    required: true
+  oauth-token:
+    description: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`)
+    required: true
+  protected-paths:
+    description: Comma-separated path prefixes the factory hook blocks Claude from editing
+    default: ""
+  timeout-minutes:
+    description: Hard wall-clock limit (subscription runs have no dollar cap)
+    default: "30"
+  factory-path:
+    description: Path of the laravel-factory checkout (loaded as a plugin)
+    default: .factory
+outputs:
+  final-message:
+    description: Path to a file holding Claude's final message
+    value: ${{ steps.run.outputs.final-message }}
+runs:
+  using: composite
+  steps:
+    - name: Install Claude Code
+      shell: bash
+      run: npm install -g @anthropic-ai/claude-code
+
+    - id: run
+      name: Run Claude
+      shell: bash
+      env:
+        CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.oauth-token }}
+        FACTORY_PROTECTED_PATHS: ${{ inputs.protected-paths }}
+        PROMPT: ${{ inputs.prompt }}
+        MINUTES: ${{ inputs.timeout-minutes }}
+        FACTORY_PATH: ${{ inputs.factory-path }}
+      run: |
+        set -o pipefail
+        # Never let an API key take precedence over the subscription token.
+        unset ANTHROPIC_API_KEY GH_TOKEN GITHUB_TOKEN
+        log="$RUNNER_TEMP/claude-output.jsonl"
+        timeout "${MINUTES}m" claude -p "$PROMPT" \
+          --plugin-dir "$FACTORY_PATH" \
+          --permission-mode bypassPermissions \
+          --disallowedTools WebFetch WebSearch \
+          --output-format stream-json --verbose \
+          2>&1 | tee "$log" || echo "::warning::Claude exited non-zero; the post-checks decide the outcome."
+        final="$RUNNER_TEMP/claude-final.md"
+        grep '^{' "$log" \
+          | jq -rs '[.[] | select(.type == "result")] | last | .result // ""' > "$final" || true
+        echo "final-message=$final" >> "$GITHUB_OUTPUT"
+
+    - if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: claude-output-${{ github.job }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/claude-output.jsonl
+        if-no-files-found: ignore

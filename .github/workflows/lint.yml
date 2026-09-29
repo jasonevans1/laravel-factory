@@ -1,0 +1,99 @@
+name: lint
+
+# Reusable PR quality gate. Required check: "<caller job> / quality".
+#   Pint                      fails on style
+#   PHPStan (Larastan)        dampener for the Larastan loop: new errors fail;
+#                             baselined ones don't
+#   composer audit dampener   warns if the PR adds advisories (never fails)
+#   test-integrity gate       labels + comments when tests may be weakened (never fails)
+
+on:
+  workflow_call:
+    inputs:
+      factory-ref:
+        type: string
+        default: v1
+      factory-repo:
+        type: string
+        default: jasonevans1/laravel-factory
+      php-version:
+        type: string
+        default: "8.4"
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+          node: "false"
+
+      - name: Pint
+        run: vendor/bin/pint --test
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=github
+
+      - name: Composer audit dampener (warn only)
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          count() { composer audit --locked --format=json --no-interaction 2>/dev/null \
+            | jq '[.advisories | if type == "object" then .[][] else empty end] | length'; }
+          pr=$(count)
+          mkdir -p "$RUNNER_TEMP/base"
+          git show "origin/$BASE_REF:composer.json" > "$RUNNER_TEMP/base/composer.json"
+          git show "origin/$BASE_REF:composer.lock" > "$RUNNER_TEMP/base/composer.lock"
+          base=$(cd "$RUNNER_TEMP/base" && count)
+          echo "base: $base advisories, PR: $pr"
+          if [ "$pr" -gt "$base" ]; then
+            echo "::warning::This PR increases composer audit advisories ($base -> $pr)."
+          fi
+
+      - name: Test-integrity gate (label + comment, never fails)
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_REF: ${{ github.base_ref }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          base=$(git merge-base "origin/$BASE_REF" HEAD)
+          report=$(php .factory/scripts/test-integrity.php "$base" HEAD)
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" \
+            --jq '[.[] | select(.body | startswith("<!-- test-integrity -->"))][0].id // empty')
+          if [ -n "$report" ]; then
+            echo "$report" >> "$GITHUB_STEP_SUMMARY"
+            gh label create test-weakened --color B60205 --description "Tests may be weakened: review" 2>/dev/null || true
+            gh pr edit "$NUMBER" --add-label test-weakened
+            if [ -n "$existing" ]; then
+              gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -f body="$report" > /dev/null
+            else
+              gh pr comment "$NUMBER" --body "$report"
+            fi
+          else
+            gh pr edit "$NUMBER" --remove-label test-weakened 2>/dev/null || true
+            if [ -n "$existing" ]; then
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$existing"
+            fi
+            echo "Test-integrity gate: clean." >> "$GITHUB_STEP_SUMMARY"
+          fi

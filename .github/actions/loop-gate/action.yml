@@ -1,0 +1,47 @@
+name: Loop gate
+description: >
+  Flow control for a control loop: at most one open PR per loop label.
+  Scheduled runs no-op while one is open; a PR older than max-age-days fails
+  the job loudly (staleness alarm) so a stalled loop can't go quiet.
+inputs:
+  label:
+    description: Loop label, e.g. security-loop
+    required: true
+  max-age-days:
+    description: Open loop PR age that counts as stalled
+    default: "7"
+  token:
+    description: Token with pull-requests read
+    required: true
+outputs:
+  run:
+    description: "'true' when the loop should run"
+    value: ${{ steps.gate.outputs.run }}
+runs:
+  using: composite
+  steps:
+    - id: gate
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        LABEL: ${{ inputs.label }}
+        MAX_AGE_DAYS: ${{ inputs.max-age-days }}
+        EVENT: ${{ github.event_name }}
+      run: |
+        open=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --label "$LABEL" \
+          --json number,url,createdAt --limit 1)
+        if [ "$(jq length <<<"$open")" -gt 0 ]; then
+          created=$(jq -r '.[0].createdAt' <<<"$open")
+          age_days=$(( ( $(date +%s) - $(date -d "$created" +%s) ) / 86400 ))
+          url=$(jq -r '.[0].url' <<<"$open")
+          if [ "$age_days" -ge "$MAX_AGE_DAYS" ]; then
+            echo "::error::Loop '$LABEL' is stalled: $url has been open ${age_days} days. Merge or close it; the loop will not open another PR until then."
+            exit 1
+          fi
+          if [ "$EVENT" = "schedule" ]; then
+            echo "Open $LABEL PR ($url, ${age_days}d old); no-op."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+        fi
+        echo "run=true" >> "$GITHUB_OUTPUT"

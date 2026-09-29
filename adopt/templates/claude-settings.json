@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "laravel-factory": {
+      "source": {
+        "source": "github",
+        "repo": "jasonevans1/laravel-factory"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "laravel-factory@laravel-factory": true
+  }
+}

@@ -1,0 +1,196 @@
+name: security-loop
+
+# Security control loop (reusable). Set point: zero `composer audit` advisories.
+#   sensor/controller  scripts/security-loop-next.sh   (deterministic)
+#   actuator           scripts/security-fix.sh         (deterministic: composer update -> widen -> tests)
+#   fallback           Claude + dependency-fix skill   (only when tests fail after the upgrade)
+#   post-check         audit + tests + diff guard + strict test-integrity (deterministic)
+# Majors and unfixable packages are deferred to an issue, never to Claude.
+
+on:
+  workflow_call:
+    inputs:
+      factory-ref:
+        type: string
+        default: v1
+      factory-repo:
+        type: string
+        default: jasonevans1/laravel-factory
+      php-version:
+        type: string
+        default: "8.4"
+      test-command:
+        type: string
+        default: vendor/bin/pest
+      claude-timeout-minutes:
+        type: string
+        default: "30"
+    secrets:
+      FACTORY_APP_ID:
+        required: true
+      FACTORY_APP_PRIVATE_KEY:
+        required: true
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+
+concurrency:
+  group: security-loop
+  cancel-in-progress: false
+
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      FACTORY_OUT: ${{ github.workspace }}/../factory-out
+      FACTORY_TEST_CMD: ${{ inputs.test-command }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - id: gate
+        uses: ./.factory/.github/actions/loop-gate
+        with:
+          label: security-loop
+          token: ${{ github.token }}
+
+      - if: steps.gate.outputs.run == 'true'
+        uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+
+      - id: target
+        if: steps.gate.outputs.run == 'true'
+        name: Sensor + controller
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Packages with an open deferral issue are skipped, not retried.
+          FACTORY_SKIP=$(gh issue list --state open --label security-loop-deferred --json title \
+            --jq '[.[].title | capture("^security-loop: (?<p>\\S+)").p] | join(" ")')
+          export FACTORY_SKIP
+          output=$(.factory/scripts/security-loop-next.sh)
+          echo "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          package=$(sed -n 's/^Next: *\([^ ]*\).*/\1/p' <<<"$output")
+          echo "package=$package" >> "$GITHUB_OUTPUT"
+
+      - id: auth
+        if: steps.target.outputs.package != ''
+        uses: ./.factory/.github/actions/app-auth
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+
+      - id: fix
+        if: steps.target.outputs.package != ''
+        name: Deterministic fix (composer update, widen within major, tests)
+        env:
+          PACKAGE: ${{ steps.target.outputs.package }}
+        run: |
+          branch="security/${PACKAGE//\//-}-$GITHUB_RUN_ID"
+          git checkout -b "$branch"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          .factory/scripts/security-fix.sh "$PACKAGE"
+
+      - name: Defer to an issue (major upgrade or no fix)
+        if: steps.fix.outputs.resolved_by == 'deferred'
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+          PACKAGE: ${{ steps.target.outputs.package }}
+        run: |
+          gh label create security-loop-deferred --color D93F0B --description "Security fix needs manual review" 2>/dev/null || true
+          gh issue create --title "security-loop: $PACKAGE needs manual upgrade" \
+            --body-file "$FACTORY_OUT/summary.md" --label security-loop-deferred
+          echo "resolved-by: deferred ($PACKAGE)" >> "$GITHUB_STEP_SUMMARY"
+
+      - id: deps
+        if: steps.fix.outputs.resolved_by == 'deterministic' || steps.fix.outputs.resolved_by == 'needs-claude'
+        name: Commit dependency change
+        env:
+          PACKAGE: ${{ steps.target.outputs.package }}
+          OLD: ${{ steps.fix.outputs.old_version }}
+          NEW: ${{ steps.fix.outputs.new_version }}
+        run: |
+          git add composer.json composer.lock
+          git commit -m "security: upgrade $PACKAGE $OLD -> $NEW"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - id: claude
+        if: steps.fix.outputs.resolved_by == 'needs-claude'
+        uses: ./.factory/.github/actions/claude
+        with:
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          protected-paths: composer.json,composer.lock,phpstan.neon
+          timeout-minutes: ${{ inputs.claude-timeout-minutes }}
+          prompt: |
+            Use the laravel-factory:dependency-fix skill.
+            Package: ${{ steps.target.outputs.package }} was upgraded ${{ steps.fix.outputs.old_version }} -> ${{ steps.fix.outputs.new_version }} to resolve security advisories.
+            The upgrade is already committed. The test suite now fails; its output is in ${{ env.FACTORY_OUT }}/test-output.txt.
+            Test command: ${{ inputs.test-command }}
+            You are running unattended in CI: do not ask for approval, do not commit, do not push.
+
+      - name: Commit Claude's fix
+        if: steps.fix.outputs.resolved_by == 'needs-claude'
+        env:
+          PACKAGE: ${{ steps.target.outputs.package }}
+        run: |
+          git add -A
+          git commit -m "fix: adapt app code to $PACKAGE upgrade" || echo "Claude made no changes."
+
+      - name: Post-check (deterministic)
+        if: steps.deps.outputs.sha != ''
+        env:
+          PACKAGE: ${{ steps.target.outputs.package }}
+          DEPS_SHA: ${{ steps.deps.outputs.sha }}
+          RESOLVED: ${{ steps.fix.outputs.resolved_by }}
+        run: |
+          left=$(composer audit --locked --format=json --no-interaction 2>/dev/null \
+            | jq --arg p "$PACKAGE" '.advisories | if type == "object" then (.[$p] // []) | length else 0 end')
+          [ "$left" -eq 0 ] || { echo "::error::$PACKAGE still has $left advisories"; exit 1; }
+          $FACTORY_TEST_CMD
+          if [ "$RESOLVED" = "needs-claude" ]; then
+            php .factory/scripts/diff-guard.php --base "$DEPS_SHA" \
+              --deny composer.json --deny composer.lock --deny phpstan.neon --deny 'phpstan-baseline.*'
+            php .factory/scripts/test-integrity.php "$DEPS_SHA" HEAD --strict
+          fi
+
+      - name: PR body
+        if: steps.deps.outputs.sha != ''
+        env:
+          RESOLVED: ${{ steps.fix.outputs.resolved_by }}
+          CLAUDE_MSG: ${{ steps.claude.outputs.final-message }}
+        run: |
+          body="$FACTORY_OUT/pr-body.md"
+          grep -v '^resolved-by:' "$FACTORY_OUT/summary.md" > "$body"
+          if [ "$RESOLVED" = "needs-claude" ]; then
+            { echo; echo "### Claude's fix"; echo; cat "$CLAUDE_MSG" 2>/dev/null; echo; echo "resolved-by: claude"; } >> "$body"
+          else
+            echo "resolved-by: deterministic" >> "$body"
+          fi
+
+      - if: steps.deps.outputs.sha != ''
+        uses: ./.factory/.github/actions/open-pr
+        with:
+          token: ${{ steps.auth.outputs.token }}
+          bot-login: ${{ steps.auth.outputs.bot-login }}
+          branch: ${{ steps.fix.outputs.branch }}
+          title: "security: fix ${{ steps.target.outputs.package }} advisories"
+          body-file: ${{ env.FACTORY_OUT }}/pr-body.md
+          label: security-loop
+          resolved-by: ${{ steps.fix.outputs.resolved_by == 'deterministic' && 'deterministic' || 'claude' }}
+          # Lockfile-only fixes may auto-merge once trusted; Claude's never do.
+          automerge-eligible: ${{ steps.fix.outputs.resolved_by == 'deterministic' }}

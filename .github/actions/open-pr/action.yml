@@ -1,0 +1,72 @@
+name: Open loop PR
+description: >
+  Deterministic push + PR as the factory App. Records resolved-by in the PR body
+  and job summary. Enables auto-merge only when the caller says the change is
+  eligible AND the loop has earned trust: its last N merged PRs were all merged
+  unchanged (every commit authored by the App bot).
+inputs:
+  token:
+    description: App installation token (from app-auth)
+    required: true
+  bot-login:
+    description: App bot login (from app-auth)
+    required: true
+  branch:
+    required: true
+  title:
+    required: true
+  body-file:
+    required: true
+  label:
+    required: true
+  resolved-by:
+    description: deterministic | claude
+    required: true
+  automerge-eligible:
+    description: "'true' if this change class may auto-merge once trusted"
+    default: "false"
+  trust-threshold:
+    description: Consecutive unchanged merges required before auto-merge
+    default: "5"
+outputs:
+  url:
+    value: ${{ steps.pr.outputs.url }}
+runs:
+  using: composite
+  steps:
+    - id: pr
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        BRANCH: ${{ inputs.branch }}
+        TITLE: ${{ inputs.title }}
+        BODY_FILE: ${{ inputs.body-file }}
+        LABEL: ${{ inputs.label }}
+        RESOLVED_BY: ${{ inputs.resolved-by }}
+      run: |
+        git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git push --force-with-lease --set-upstream origin "HEAD:refs/heads/$BRANCH"
+        grep -q '^resolved-by:' "$BODY_FILE" || printf '\nresolved-by: %s\n' "$RESOLVED_BY" >> "$BODY_FILE"
+        gh label create "$LABEL" --color 0E8A16 --description "Control loop PR" 2>/dev/null || true
+        url=$(gh pr create --head "$BRANCH" --title "$TITLE" --body-file "$BODY_FILE" --label "$LABEL")
+        echo "url=$url" >> "$GITHUB_OUTPUT"
+        echo "resolved-by: $RESOLVED_BY ($url)" >> "$GITHUB_STEP_SUMMARY"
+
+    - if: inputs.automerge-eligible == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        LABEL: ${{ inputs.label }}
+        BOT: ${{ inputs.bot-login }}
+        THRESHOLD: ${{ inputs.trust-threshold }}
+        URL: ${{ steps.pr.outputs.url }}
+      run: |
+        merged=$(gh pr list --state merged --label "$LABEL" --limit "$THRESHOLD" --json number,commits)
+        unchanged=$(jq --arg bot "${BOT%\[bot\]}" \
+          '[.[] | select(all(.commits[].authors[]; .login == $bot or .login == ($bot + "[bot]")))] | length' <<<"$merged")
+        if [ "$(jq length <<<"$merged")" -ge "$THRESHOLD" ] && [ "$unchanged" -ge "$THRESHOLD" ]; then
+          gh pr merge "$URL" --auto --squash
+          echo "Auto-merge enabled: last $THRESHOLD $LABEL PRs merged unchanged." >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "Auto-merge not yet trusted: $unchanged of the last $(jq length <<<"$merged") merged $LABEL PRs were unchanged (need $THRESHOLD)." >> "$GITHUB_STEP_SUMMARY"
+        fi

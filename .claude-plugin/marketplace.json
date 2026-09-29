@@ -1,0 +1,15 @@
+{
+  "name": "laravel-factory",
+  "owner": {
+    "name": "Jason Evans"
+  },
+  "description": "Jason Evans's Laravel software factory: control-loop skills for unattended CI.",
+  "plugins": [
+    {
+      "name": "laravel-factory",
+      "source": "./",
+      "description": "Control-loop software factory for Laravel apps: deterministic-first actuator skills and a protected-paths guard for unattended CI runs.",
+      "version": "1.0.0"
+    }
+  ]
+}

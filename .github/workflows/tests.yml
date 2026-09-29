@@ -1,0 +1,134 @@
+name: tests
+
+# Reusable CI: Pest (+ optional Playwright). Required checks: "<caller job> / pest"
+# and, with e2e, "<caller job> / e2e".
+# Runtime-deprecation dampener: tests log deprecations; a PR warns (never fails)
+# when it has more than the last main build, whose count is kept in the Actions cache.
+
+on:
+  workflow_call:
+    inputs:
+      factory-ref:
+        type: string
+        default: v1
+      factory-repo:
+        type: string
+        default: jasonevans1/laravel-factory
+      php-version:
+        type: string
+        default: "8.4"
+      e2e:
+        description: Run Playwright (needs playwright.config.* in the app)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  pest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+
+      - name: Pest
+        env:
+          LOG_DEPRECATIONS_CHANNEL: single
+          LOG_DEPRECATIONS_WHILE_TESTING: "true"
+        run: vendor/bin/pest
+
+      - name: Count runtime deprecations
+        if: always()
+        run: |
+          mkdir -p .deprecations
+          # Laravel logs each deprecation as "<message> in <file> on line <n>".
+          grep -hoE 'WARNING: .* on line [0-9]+' storage/logs/*.log 2>/dev/null | sort -u > .deprecations/list.txt || true
+          grep -c '' .deprecations/list.txt > .deprecations/count || echo 0 > .deprecations/count
+          echo "Runtime deprecations: $(cat .deprecations/count)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save main's count
+        if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+        run: cp .deprecations/count .deprecations/main-count
+
+      - if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
+        uses: actions/cache/save@v4
+        with:
+          path: .deprecations/main-count
+          key: deprecations-${{ github.sha }}
+        continue-on-error: true
+
+      - name: Restore main's count
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: .deprecations/main-count
+          key: deprecations-${{ github.event.pull_request.base.sha }}
+          restore-keys: deprecations-
+
+      - name: Deprecation dampener (warn only)
+        if: github.event_name == 'pull_request'
+        run: |
+          pr=$(cat .deprecations/count)
+          base=$(cat .deprecations/main-count 2>/dev/null || echo "")
+          if [ -z "$base" ]; then echo "No main baseline cached yet."; exit 0; fi
+          echo "main: $base, PR: $pr runtime deprecations"
+          if [ "$pr" -gt "$base" ]; then
+            echo "::warning::This PR adds runtime deprecations ($base -> $pr):"
+            sed 's/^/  /' .deprecations/list.txt | head -20
+          fi
+
+  e2e:
+    if: inputs.e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+
+      - name: Database + server
+        run: |
+          sed -i 's/^QUEUE_CONNECTION=.*/QUEUE_CONNECTION=sync/' .env
+          touch database/database.sqlite
+          php artisan migrate --force --seed
+          php artisan serve --host=127.0.0.1 --port=8000 > /dev/null 2>&1 &
+          timeout 30 bash -c 'until curl -sf http://127.0.0.1:8000/up; do sleep 1; done'
+
+      - name: Playwright
+        env:
+          BASE_URL: http://127.0.0.1:8000
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test --project=chromium
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+          if-no-files-found: ignore

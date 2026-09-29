@@ -1,0 +1,26 @@
+# Managed by laravel-factory adopt.sh. Edit the factory, not this file.
+name: prod-error-loop
+
+on:
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+  actions: read
+  checks: read
+
+jobs:
+  loop:
+    uses: jasonevans1/laravel-factory/.github/workflows/prod-error-loop.yml@__FACTORY_REF__
+    with:
+      factory-ref: __FACTORY_REF__
+      sensor-command: __ERROR_SENSOR__
+    secrets:
+      FACTORY_APP_ID: ${{ secrets.FACTORY_APP_ID }}
+      FACTORY_APP_PRIVATE_KEY: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ERROR_TRACKER_TOKEN: ${{ secrets.ERROR_TRACKER_TOKEN }}

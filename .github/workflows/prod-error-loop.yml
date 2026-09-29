@@ -1,0 +1,210 @@
+name: prod-error-loop
+
+# Production-error loop (reusable). Gated on an error tracker: the app supplies
+# `sensor-command`, which prints its tracker's unresolved error groups as JSON in
+# the shape documented in scripts/prod-error-next.php.
+#   controller  scripts/prod-error-next.php: top group with an app/ top frame;
+#               whitelists and validates fields (untrusted-input rule)
+#   phase A     Claude writes a failing test (tests/ only)
+#   verify      the test must FAIL on current code, mentioning the exception (deterministic)
+#   phase B     Claude fixes app code (tests/ frozen); full suite must pass
+# No reproduction -> an issue, not a PR. Never auto-merged.
+
+on:
+  workflow_call:
+    inputs:
+      sensor-command:
+        description: Prints normalised error groups as JSON; gets ERROR_TRACKER_TOKEN in its env
+        type: string
+        required: true
+      factory-ref:
+        type: string
+        default: v1
+      factory-repo:
+        type: string
+        default: jasonevans1/laravel-factory
+      php-version:
+        type: string
+        default: "8.4"
+      claude-timeout-minutes:
+        type: string
+        default: "30"
+    secrets:
+      FACTORY_APP_ID:
+        required: true
+      FACTORY_APP_PRIVATE_KEY:
+        required: true
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+      ERROR_TRACKER_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: prod-error-loop
+  cancel-in-progress: false
+
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      FACTORY_OUT: ${{ github.workspace }}/../factory-out
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - id: gate
+        uses: ./.factory/.github/actions/loop-gate
+        with:
+          label: prod-error-loop
+          token: ${{ github.token }}
+
+      - id: target
+        if: steps.gate.outputs.run == 'true'
+        name: Sensor + controller
+        env:
+          ERROR_TRACKER_TOKEN: ${{ secrets.ERROR_TRACKER_TOKEN }}
+          SENSOR: ${{ inputs.sensor-command }}
+        run: |
+          mkdir -p "$FACTORY_OUT"
+          bash -c "$SENSOR" > "$FACTORY_OUT/errors.json"
+          php .factory/scripts/prod-error-next.php "$FACTORY_OUT/errors.json" .github/agent-memory/prod-error-skip.txt > "$FACTORY_OUT/order.json"
+          rm "$FACTORY_OUT/errors.json" # raw tracker data never reaches the agent step
+          id=$(jq -r '.id // empty' "$FACTORY_OUT/order.json")
+          if [ -z "$id" ]; then echo "No actionable app errors." | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          echo "Next: $id ($(jq -r .exception_class "$FACTORY_OUT/order.json"), $(jq -r .count "$FACTORY_OUT/order.json") events)" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+          echo "exception=$(jq -r '.exception_class | split("\\") | last' "$FACTORY_OUT/order.json")" >> "$GITHUB_OUTPUT"
+
+      - if: steps.target.outputs.id != ''
+        uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+
+      - id: auth
+        if: steps.target.outputs.id != ''
+        uses: ./.factory/.github/actions/app-auth
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+
+      - id: branch
+        if: steps.target.outputs.id != ''
+        env:
+          ID: ${{ steps.target.outputs.id }}
+        run: |
+          git checkout -b "fix/error-${ID//[^A-Za-z0-9-]/-}-$GITHUB_RUN_ID"
+          echo "name=$(git branch --show-current)" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - id: repro
+        if: steps.target.outputs.id != ''
+        uses: ./.factory/.github/actions/claude
+        with:
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          protected-paths: app/,bootstrap/,config/,database/,resources/,routes/,public/,composer.json,composer.lock
+          timeout-minutes: ${{ inputs.claude-timeout-minutes }}
+          prompt: |
+            Use the laravel-factory:fix-prod-error skill, phase "reproduce".
+            The error work order (sanitised stack frames only) is ${{ env.FACTORY_OUT }}/order.json.
+            Write ONE failing Pest test under tests/ that reproduces it. Do not change application code.
+            You are running unattended in CI: do not ask for approval, do not commit, do not push.
+
+      - id: verify
+        if: steps.target.outputs.id != ''
+        name: Verify the reproduction (deterministic)
+        env:
+          BASE: ${{ steps.branch.outputs.base }}
+          EXCEPTION: ${{ steps.target.outputs.exception }}
+        run: |
+          git add -A
+          git commit -m "test: reproduce production error" || { echo "reproduced=false" >> "$GITHUB_OUTPUT"; exit 0; }
+          php .factory/scripts/diff-guard.php --base "$BASE" --allow 'tests/*'
+          mapfile -t files < <(git diff --name-only "$BASE" HEAD -- tests/)
+          if vendor/bin/pest "${files[@]}" --colors=never > "$FACTORY_OUT/repro.txt" 2>&1; then
+            echo "The new test passes on current code: not a reproduction."
+            echo "reproduced=false" >> "$GITHUB_OUTPUT"
+          elif grep -q -- "$EXCEPTION" "$FACTORY_OUT/repro.txt"; then
+            echo "reproduced=true" >> "$GITHUB_OUTPUT"
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          else
+            echo "The new test fails, but not with $EXCEPTION: not a reproduction."
+            echo "reproduced=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Defer (no reproduction)
+        if: steps.verify.outputs.reproduced == 'false'
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+          ID: ${{ steps.target.outputs.id }}
+        run: |
+          gh label create prod-error-deferred --color D93F0B --description "Production error the loop could not reproduce" 2>/dev/null || true
+          { echo "The prod-error loop could not write a failing test for this error group."; echo; echo '```json'; cat "$FACTORY_OUT/order.json"; echo '```'; echo; echo "Add \`$ID\` to .github/agent-memory/prod-error-skip.txt once triaged."; echo; echo "resolved-by: deferred"; } > "$FACTORY_OUT/issue.md"
+          gh issue create --title "prod-error-loop: could not reproduce $ID" --body-file "$FACTORY_OUT/issue.md" --label prod-error-deferred
+          echo "resolved-by: deferred ($ID)" >> "$GITHUB_STEP_SUMMARY"
+
+      - id: fix
+        if: steps.verify.outputs.reproduced == 'true'
+        uses: ./.factory/.github/actions/claude
+        with:
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          protected-paths: tests/,composer.json,composer.lock,phpstan.neon,phpstan-baseline.php
+          timeout-minutes: ${{ inputs.claude-timeout-minutes }}
+          prompt: |
+            Use the laravel-factory:fix-prod-error skill, phase "fix".
+            The work order is ${{ env.FACTORY_OUT }}/order.json. The last commit adds a failing test that reproduces it
+            (output: ${{ env.FACTORY_OUT }}/repro.txt). Fix the application code so that test passes. Tests are frozen.
+            You are running unattended in CI: do not ask for approval, do not commit, do not push.
+
+      - name: Commit + post-check (deterministic)
+        if: steps.verify.outputs.reproduced == 'true'
+        env:
+          REPRO: ${{ steps.verify.outputs.sha }}
+        run: |
+          git add -A
+          git commit -m "fix: production error ${{ steps.target.outputs.id }}" || { echo "::error::Claude made no changes."; exit 1; }
+          php .factory/scripts/diff-guard.php --base "$REPRO" \
+            --deny 'tests/*' --deny composer.json --deny composer.lock --deny phpstan.neon --deny 'phpstan-baseline.*' \
+            --deny-added '@phpstan-ignore'
+          vendor/bin/pest
+
+      - if: steps.verify.outputs.reproduced == 'true'
+        env:
+          CLAUDE_MSG: ${{ steps.fix.outputs.final-message }}
+        run: |
+          {
+            echo "## Production error fix: ${{ steps.target.outputs.id }}"
+            echo
+            echo '```json'; cat "$FACTORY_OUT/order.json"; echo '```'
+            echo
+            echo "1. A test reproducing the error was written and verified failing on current code."
+            echo "2. The fix makes it pass with tests frozen; the full suite passes."
+            echo
+            echo "### Claude's notes"; echo; cat "$CLAUDE_MSG" 2>/dev/null
+            echo; echo "resolved-by: claude"
+          } > "$FACTORY_OUT/pr-body.md"
+
+      - if: steps.verify.outputs.reproduced == 'true'
+        uses: ./.factory/.github/actions/open-pr
+        with:
+          token: ${{ steps.auth.outputs.token }}
+          bot-login: ${{ steps.auth.outputs.bot-login }}
+          branch: ${{ steps.branch.outputs.name }}
+          title: "fix: production error ${{ steps.target.outputs.id }}"
+          body-file: ${{ env.FACTORY_OUT }}/pr-body.md
+          label: prod-error-loop
+          resolved-by: claude
+          automerge-eligible: "false"

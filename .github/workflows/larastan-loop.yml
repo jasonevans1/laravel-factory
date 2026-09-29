@@ -1,0 +1,220 @@
+name: larastan-loop
+
+# Larastan baseline ratchet (reusable). Set point: phpstan-baseline.php empty.
+#   sensor/controller  scripts/larastan-loop-next.php     (deprecations first, then most errors)
+#   actuator           Rector on the target file          (deterministic)
+#   fallback           Claude + fix-larastan-baseline     (only for errors Rector left)
+#   ratchet            scripts/larastan-ratchet-check.php (baseline may only shrink)
+#   guards             scripts/diff-guard.php             (target + baseline only, no @phpstan-ignore)
+# Rector's progress is committed first and survives a failed Claude attempt.
+# Apps without a baseline are at the set point: the lint dampener keeps them there.
+
+on:
+  workflow_call:
+    inputs:
+      factory-ref:
+        type: string
+        default: v1
+      factory-repo:
+        type: string
+        default: jasonevans1/laravel-factory
+      php-version:
+        type: string
+        default: "8.4"
+      test-command:
+        type: string
+        default: vendor/bin/pest
+      claude-timeout-minutes:
+        type: string
+        default: "30"
+    secrets:
+      FACTORY_APP_ID:
+        required: true
+      FACTORY_APP_PRIVATE_KEY:
+        required: true
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: larastan-loop
+  cancel-in-progress: false
+
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      FACTORY_OUT: ${{ github.workspace }}/../factory-out
+      PHPSTAN: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+      FACTORY_TEST_CMD: ${{ inputs.test-command }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - id: gate
+        uses: ./.factory/.github/actions/loop-gate
+        with:
+          label: larastan-loop
+          token: ${{ github.token }}
+
+      - id: target
+        if: steps.gate.outputs.run == 'true'
+        name: Sensor + controller
+        run: |
+          output=$(php .factory/scripts/larastan-loop-next.php phpstan-baseline.php)
+          echo "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "file=$(sed -n 's/^Next: //p' <<<"$output")" >> "$GITHUB_OUTPUT"
+
+      - if: steps.target.outputs.file != ''
+        uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+
+      - id: auth
+        if: steps.target.outputs.file != ''
+        uses: ./.factory/.github/actions/app-auth
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+
+      - id: rector
+        if: steps.target.outputs.file != ''
+        name: Deterministic fix (Rector on the target file)
+        env:
+          TARGET: ${{ steps.target.outputs.file }}
+        run: |
+          mkdir -p "$FACTORY_OUT"
+          slug=$(basename "$TARGET" .php | tr '[:upper:]' '[:lower:]')
+          git checkout -b "larastan/$slug-$GITHUB_RUN_ID"
+          echo "branch=larastan/$slug-$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
+          cp phpstan-baseline.php "$FACTORY_OUT/old-baseline.php"
+          echo "start=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          [ -f rector.php ] && vendor/bin/rector process "$TARGET" --no-progress-bar || true
+          $PHPSTAN --generate-baseline=phpstan-baseline.php --allow-empty-baseline || true
+          if git diff --quiet -- "$TARGET"; then
+            echo "Rector changed nothing."; git checkout -- .; exit 0
+          fi
+          if php .factory/scripts/larastan-ratchet-check.php "$FACTORY_OUT/old-baseline.php" phpstan-baseline.php \
+             && vendor/bin/pint "$TARGET" && $FACTORY_TEST_CMD; then
+            git add -A && git commit -m "larastan: Rector fixes in $TARGET"
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Rector's change did not pass the ratchet or tests; discarded."
+            git checkout -- .
+          fi
+
+      - id: remaining
+        if: steps.target.outputs.file != ''
+        env:
+          TARGET: ${{ steps.target.outputs.file }}
+        run: |
+          php .factory/scripts/larastan-loop-next.php phpstan-baseline.php --errors-for "$TARGET" > "$FACTORY_OUT/errors.md"
+          count=$(grep -c '' "$FACTORY_OUT/errors.md" || true)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "Errors left in $TARGET after Rector: $count" >> "$GITHUB_STEP_SUMMARY"
+          echo "pre_claude=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - id: claude
+        if: steps.remaining.outputs.count > 0
+        uses: ./.factory/.github/actions/claude
+        with:
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          protected-paths: phpstan.neon,phpstan-baseline.php,composer.json,composer.lock,tests/
+          timeout-minutes: ${{ inputs.claude-timeout-minutes }}
+          prompt: |
+            Use the laravel-factory:fix-larastan-baseline skill.
+            Target file: ${{ steps.target.outputs.file }}
+            Its baselined PHPStan errors are listed in ${{ env.FACTORY_OUT }}/errors.md.
+            Fix at most 15 of them, in this file only. Do not regenerate the baseline.
+            You are running unattended in CI: do not ask for approval, do not commit, do not push.
+
+      - id: post
+        if: steps.remaining.outputs.count > 0
+        name: Ratchet + guards (deterministic)
+        env:
+          TARGET: ${{ steps.target.outputs.file }}
+          PRE: ${{ steps.remaining.outputs.pre_claude }}
+        run: |
+          $PHPSTAN --generate-baseline=phpstan-baseline.php --allow-empty-baseline || true
+          vendor/bin/pint "$TARGET"
+          git add -A && git commit -qm "larastan: fix errors in $TARGET" || true
+          if php .factory/scripts/larastan-ratchet-check.php "$FACTORY_OUT/old-baseline.php" phpstan-baseline.php \
+             && php .factory/scripts/diff-guard.php --base "$PRE" \
+                  --allow "$TARGET" --allow phpstan-baseline.php \
+                  --deny-added '@phpstan-ignore' \
+                  --flag-added '\bmixed\b' --flag-added '@var\b' | tee "$FACTORY_OUT/flags.txt" \
+             && $FACTORY_TEST_CMD; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Claude's change failed the ratchet, guards or tests; keeping only Rector's commit."
+            git reset --hard "$PRE"
+          fi
+
+      - id: result
+        if: steps.target.outputs.file != ''
+        env:
+          TARGET: ${{ steps.target.outputs.file }}
+          START: ${{ steps.rector.outputs.start }}
+          CLAUDE_OK: ${{ steps.post.outputs.ok }}
+          CLAUDE_MSG: ${{ steps.claude.outputs.final-message }}
+        run: |
+          if [ "$(git rev-parse HEAD)" = "$START" ]; then
+            echo "::error::No verified progress on $TARGET this run."
+            exit 1
+          fi
+          resolved=deterministic
+          [ "$CLAUDE_OK" = "true" ] && resolved=claude
+          flagged=false
+          [ -s "$FACTORY_OUT/flags.txt" ] && flagged=true
+          body="$FACTORY_OUT/pr-body.md"
+          {
+            echo "## Larastan ratchet: $TARGET"
+            echo
+            php .factory/scripts/larastan-ratchet-check.php "$FACTORY_OUT/old-baseline.php" phpstan-baseline.php
+            echo
+            git log --format='- %s' "$START..HEAD"
+            if [ "$flagged" = true ]; then
+              echo; echo "### Needs type review"; echo; sed 's/^/- /' "$FACTORY_OUT/flags.txt"
+            fi
+            if [ "$resolved" = claude ]; then
+              echo; echo "### Claude's notes"; echo; cat "$CLAUDE_MSG" 2>/dev/null
+            fi
+            echo; echo "resolved-by: $resolved"
+          } > "$body"
+          echo "resolved=$resolved" >> "$GITHUB_OUTPUT"
+          echo "flagged=$flagged" >> "$GITHUB_OUTPUT"
+
+      - id: pr
+        if: steps.result.outputs.resolved != ''
+        uses: ./.factory/.github/actions/open-pr
+        with:
+          token: ${{ steps.auth.outputs.token }}
+          bot-login: ${{ steps.auth.outputs.bot-login }}
+          branch: ${{ steps.rector.outputs.branch }}
+          title: "larastan: fix baseline errors in ${{ steps.target.outputs.file }}"
+          body-file: ${{ env.FACTORY_OUT }}/pr-body.md
+          label: larastan-loop
+          resolved-by: ${{ steps.result.outputs.resolved }}
+          automerge-eligible: ${{ steps.result.outputs.flagged == 'false' }}
+
+      - if: steps.result.outputs.flagged == 'true'
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+          URL: ${{ steps.pr.outputs.url }}
+        run: |
+          gh label create needs-type-review --color FBCA04 --description "New mixed or @var: review the types" 2>/dev/null || true
+          gh pr edit "$URL" --add-label needs-type-review

@@ -1,0 +1,70 @@
+name: deploy
+
+# Reusable deploy to Laravel Cloud + verification. Triggers the deploy hook, then
+# polls <url>/up (Laravel's health route) and fails the job if the app is not
+# healthy within the window. Rollback is `git revert <sha> && git push`, which
+# redeploys through this same workflow.
+
+on:
+  workflow_call:
+    inputs:
+      url:
+        description: Production base URL, e.g. https://example.com
+        type: string
+        required: true
+      health-path:
+        type: string
+        default: /up
+      settle-seconds:
+        description: Wait before polling, while Cloud builds and swaps the release
+        type: number
+        default: 90
+      window-seconds:
+        description: How long to poll for a healthy response
+        type: number
+        default: 300
+    secrets:
+      LARAVEL_CLOUD_DEPLOY_HOOK:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Trigger Laravel Cloud deploy hook
+        env:
+          HOOK: ${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}
+        run: curl -fsS -X POST "${HOOK}?commit_hash=${GITHUB_SHA}"
+
+      - name: Verify health
+        env:
+          URL: ${{ inputs.url }}${{ inputs.health-path }}
+          SETTLE: ${{ inputs.settle-seconds }}
+          WINDOW: ${{ inputs.window-seconds }}
+        run: |
+          # ponytail: /up can't tell the old release from the new one, so a deploy
+          # that never swaps still reads healthy. Upgrade: expose the commit in a
+          # header on /up and compare it with $GITHUB_SHA, or poll the Cloud API.
+          sleep "$SETTLE"
+          deadline=$(( $(date +%s) + WINDOW ))
+          healthy=0
+          while [ "$(date +%s)" -lt "$deadline" ]; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$URL" || echo 000)
+            echo "$(date +%T) $URL -> $code"
+            if [ "$code" = "200" ]; then
+              healthy=$((healthy + 1))
+              [ "$healthy" -ge 3 ] && break
+            else
+              healthy=0
+            fi
+            sleep 10
+          done
+          if [ "$healthy" -lt 3 ]; then
+            echo "::error::$URL did not report healthy after deploying $GITHUB_SHA. Roll back with: git revert $GITHUB_SHA && git push"
+            exit 1
+          fi
+          echo "Deployed $GITHUB_SHA; $URL healthy." >> "$GITHUB_STEP_SUMMARY"

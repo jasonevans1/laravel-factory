@@ -1,0 +1,22 @@
+# Managed by laravel-factory adopt.sh. Edit the factory, not this file.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    uses: jasonevans1/laravel-factory/.github/workflows/deploy.yml@__FACTORY_REF__
+    with:
+      url: ${{ vars.PRODUCTION_URL }}
+    secrets:
+      LARAVEL_CLOUD_DEPLOY_HOOK: ${{ secrets.LARAVEL_CLOUD_DEPLOY_HOOK }}

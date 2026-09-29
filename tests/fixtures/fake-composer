@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Test double for composer, driven by files in $FAKE_DIR:
+#   audit.json                  current `composer audit` output
+#   version                     current version of the package (for `show`)
+#   <cmd>.fail                  make `update`/`require` exit 1
+#   <cmd>.audit.json            audit output after `update`/`require` succeeds
+#   <cmd>.version               version after `update`/`require` succeeds
+#   <cmd>.lock                  composer.lock after `update`/`require` succeeds
+# <cmd> is "update", "update-roots" (update of more than one package) or "require".
+# Every call is appended to $FAKE_DIR/calls.
+set -euo pipefail
+echo "$*" >> "$FAKE_DIR/calls"
+
+apply() {
+  [[ -f "$FAKE_DIR/$1.fail" ]] && exit 1
+  [[ -f "$FAKE_DIR/$1.audit.json" ]] && cp "$FAKE_DIR/$1.audit.json" "$FAKE_DIR/audit.json"
+  [[ -f "$FAKE_DIR/$1.version" ]] && cp "$FAKE_DIR/$1.version" "$FAKE_DIR/version"
+  [[ -f "$FAKE_DIR/$1.lock" ]] && cp "$FAKE_DIR/$1.lock" composer.lock
+  [[ "$1" == require ]] && echo '{"require": {"widened": true}}' > composer.json
+  exit 0
+}
+
+case "$1" in
+  audit) cat "$FAKE_DIR/audit.json" ;;
+  show) printf '{"versions": ["%s"]}\n' "$(cat "$FAKE_DIR/version")" ;;
+  update)
+    pkgs=0
+    for a in "${@:2}"; do [[ "$a" != -* ]] && pkgs=$((pkgs + 1)); done
+    [[ $pkgs -gt 1 ]] && apply update-roots
+    apply update
+    ;;
+  require) apply require ;;
+  *) echo "fake-composer: unsupported: $*" >&2; exit 2 ;;
+esac

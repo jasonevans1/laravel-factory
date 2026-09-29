@@ -1,0 +1,29 @@
+name: self-test
+
+# The factory's own CI: script self-tests plus workflow/shell linting.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+      - name: Script self-tests
+        run: tests/run.sh
+      - name: Lint shell scripts
+        run: shellcheck scripts/*.sh hooks/*.sh adopt/adopt.sh tests/run.sh tests/fixtures/fake-composer
+      - name: Lint workflows
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color

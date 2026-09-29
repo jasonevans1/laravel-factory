@@ -1,0 +1,1034 @@
+
+  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
+
+  [90mTests:[39m    [32;1m34 passed[39;22m[90m (83 assertions)[39m
+  [90mDuration:[39m [39m3.48s[39m
+
+  Mutating application files...
+  [90m103 Mutations for 8 Files created[39m
+
+  [39;100;1m RUN [39;49;22m app/Providers/AppServiceProvider.php
+  [31;1m⨯[39;22m [90mLine 26: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 34: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 36: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 40: TernaryNegated[39m
+  [31;1m⨯[39;22m [90mLine 40: RemoveMethodCall[39m
+  [33;1m-[39;22m [90mLine 41: DecrementInteger[39m
+  [33;1m-[39;22m [90mLine 41: IncrementInteger[39m
+
+  [39;100;1m RUN [39;49;22m app/Providers/FortifyServiceProvider.php
+  [32;1m✓[39;22m [90mLine 29: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 30: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 31: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 39: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 40: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 48: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 49: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 50: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 51: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 52: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 53: RemoveMethodCall[39m
+  [32;1m✓[39;22m [90mLine 54: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 62: RemoveMethodCall[39m
+  [33;1m-[39;22m [90mLine 63: DecrementInteger[39m
+  [33;1m-[39;22m [90mLine 63: IncrementInteger[39m
+  [32;1m✓[39;22m [90mLine 66: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 67: ConcatRemoveLeft[39m
+  [31;1m⨯[39;22m [90mLine 67: ConcatRemoveLeft[39m
+  [31;1m⨯[39;22m [90mLine 67: ConcatRemoveRight[39m
+  [31;1m⨯[39;22m [90mLine 67: ConcatRemoveRight[39m
+  [31;1m⨯[39;22m [90mLine 67: ConcatSwitchSides[39m
+  [31;1m⨯[39;22m [90mLine 67: ConcatSwitchSides[39m
+  [31;1m⨯[39;22m [90mLine 69: DecrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 69: IncrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 72: RemoveMethodCall[39m
+  [33;1m-[39;22m [90mLine 75: DecrementInteger[39m
+  [33;1m-[39;22m [90mLine 75: IncrementInteger[39m
+  [33;1m-[39;22m [90mLine 76: TernaryNegated[39m
+  [33;1m-[39;22m [90mLine 76: ConcatRemoveLeft[39m
+  [33;1m-[39;22m [90mLine 76: ConcatRemoveLeft[39m
+  [33;1m-[39;22m [90mLine 76: ConcatRemoveRight[39m
+  [33;1m-[39;22m [90mLine 76: ConcatRemoveRight[39m
+  [33;1m-[39;22m [90mLine 76: ConcatSwitchSides[39m
+  [33;1m-[39;22m [90mLine 76: ConcatSwitchSides[39m
+
+  [39;100;1m RUN [39;49;22m app/Models/User.php
+  [33;1m-[39;22m [90mLine 31: RemoveArrayItem[39m
+  [33;1m-[39;22m [90mLine 31: RemoveArrayItem[39m
+  [33;1m-[39;22m [90mLine 31: RemoveArrayItem[39m
+  [33;1m-[39;22m [90mLine 32: RemoveArrayItem[39m
+  [33;1m-[39;22m [90mLine 32: RemoveArrayItem[39m
+  [33;1m-[39;22m [90mLine 32: RemoveArrayItem[39m
+  [33;1m-[39;22m [90mLine 32: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 45: AlwaysReturnEmptyArray[39m
+  [31;1m⨯[39;22m [90mLine 46: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 47: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 56: TrueToFalse[39m
+  [31;1m⨯[39;22m [90mLine 58: TernaryNegated[39m
+  [31;1m⨯[39;22m [90mLine 58: GreaterToGreaterOrEqual[39m
+  [31;1m⨯[39;22m [90mLine 58: GreaterToSmallerOrEqual[39m
+  [31;1m⨯[39;22m [90mLine 58: DecrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 58: IncrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: DecrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: DecrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: DecrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: IncrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: IncrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: IncrementInteger[39m
+  [31;1m⨯[39;22m [90mLine 59: ConcatRemoveLeft[39m
+  [31;1m⨯[39;22m [90mLine 59: ConcatRemoveRight[39m
+  [31;1m⨯[39;22m [90mLine 59: ConcatSwitchSides[39m
+
+  [39;100;1m RUN [39;49;22m app/Livewire/Actions/Logout.php
+  [32;1m✓[39;22m [90mLine 17: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 19: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 20: RemoveMethodCall[39m
+
+  [39;100;1m RUN [39;49;22m app/Actions/Fortify/ResetUserPassword.php
+  [31;1m⨯[39;22m [90mLine 21: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 22: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 25: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 26: RemoveArrayItem[39m
+
+  [39;100;1m RUN [39;49;22m app/Actions/Fortify/CreateNewUser.php
+  [31;1m⨯[39;22m [90mLine 22: RemoveMethodCall[39m
+  [31;1m⨯[39;22m [90mLine 23: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 24: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 28: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 29: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 30: RemoveArrayItem[39m
+
+  [39;100;1m RUN [39;49;22m app/Concerns/ProfileValidationRules.php
+  [32;1m✓[39;22m [90mLine 18: AlwaysReturnEmptyArray[39m
+  [32;1m✓[39;22m [90mLine 19: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 20: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 31: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 31: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 31: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 31: AlwaysReturnEmptyArray[39m
+  [31;1m⨯[39;22m [90mLine 41: AlwaysReturnEmptyArray[39m
+  [31;1m⨯[39;22m [90mLine 42: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 43: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 44: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 45: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 46: TernaryNegated[39m
+  [32;1m✓[39;22m [90mLine 46: IdenticalToNotIdentical[39m
+  [31;1m⨯[39;22m [90mLine 46: RemoveArrayItem[39m
+
+  [39;100;1m RUN [39;49;22m app/Concerns/PasswordValidationRules.php
+  [31;1m⨯[39;22m [90mLine 17: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 17: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 17: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 17: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 17: AlwaysReturnEmptyArray[39m
+  [31;1m⨯[39;22m [90mLine 27: RemoveArrayItem[39m
+  [31;1m⨯[39;22m [90mLine 27: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 27: RemoveArrayItem[39m
+  [32;1m✓[39;22m [90mLine 27: AlwaysReturnEmptyArray[39m
+  [39;41;1m UNTESTED [39;49;22m [39;1mapp/Providers/AppServiceProvider.php [39;22m[90m > Line 26: RemoveMethodCall - ID: a759db1a81e7fe89[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function boot(): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        $this->configureDefaults();[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Configure default behaviors for production-ready applications.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/AppServiceProvider.php [39;22m[90m > Line 34: RemoveMethodCall - ID: cfdc28aa6fb58e2c[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function configureDefaults(): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        Date::use(CarbonImmutable::class);[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         DB::prohibitDestructiveCommands(app()->isProduction());[39m[39;1m
+  [39;22m[90m         Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(12)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/AppServiceProvider.php [39;22m[90m > Line 36: RemoveMethodCall - ID: b46ffaf07c9f64bf[39m
+[39;1m
+  [39;22m[90m     protected function configureDefaults(): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Date::use(CarbonImmutable::class);[39m[39;1m
+  [39;22m[31m-        DB::prohibitDestructiveCommands(app()->isProduction());[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(12)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/AppServiceProvider.php [39;22m[90m > Line 40: RemoveMethodCall - ID: 52a9f3a93003075c[39m
+[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Date::use(CarbonImmutable::class);[39m[39;1m
+  [39;22m[90m         DB::prohibitDestructiveCommands(app()->isProduction());[39m[39;1m
+  [39;22m[31m-        Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(12)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/AppServiceProvider.php [39;22m[90m > Line 41: DecrementInteger - ID: 2167f670bf2c9a01[39m
+[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Date::use(CarbonImmutable::class);[39m[39;1m
+  [39;22m[90m         DB::prohibitDestructiveCommands(app()->isProduction());[39m[39;1m
+  [39;22m[31m-        Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(12)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[32m+        Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(11)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/AppServiceProvider.php [39;22m[90m > Line 41: IncrementInteger - ID: 6c75e3ed281c1602[39m
+[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Date::use(CarbonImmutable::class);[39m[39;1m
+  [39;22m[90m         DB::prohibitDestructiveCommands(app()->isProduction());[39m[39;1m
+  [39;22m[31m-        Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(12)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[32m+        Password::defaults(fn(): ?Password => app()->isProduction() ? Password::min(13)->mixedCase()->letters()->numbers()->symbols()->uncompromised() : null);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 50: RemoveMethodCall - ID: b9914139c5d29023[39m
+[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Fortify::loginView(fn() => view('pages::auth.login'));[39m[39;1m
+  [39;22m[90m         Fortify::verifyEmailView(fn() => view('pages::auth.verify-email'));[39m[39;1m
+  [39;22m[31m-        Fortify::twoFactorChallengeView(fn() => view('pages::auth.two-factor-challenge'));[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         Fortify::confirmPasswordView(fn() => view('pages::auth.confirm-password'));[39m[39;1m
+  [39;22m[90m         Fortify::registerView(fn() => view('pages::auth.register'));[39m[39;1m
+  [39;22m[90m         Fortify::resetPasswordView(fn() => view('pages::auth.reset-password'));[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 62: RemoveMethodCall - ID: c79ff18a459c6496[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     private function configureRateLimiting(): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        RateLimiter::for('two-factor', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[31m-        });[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 63: DecrementInteger - ID: 9ca82db38969205a[39m
+[39;1m
+  [39;22m[90m     private function configureRateLimiting(): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         RateLimiter::for('two-factor', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(4)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 63: IncrementInteger - ID: 66b297f7f0ef3163[39m
+[39;1m
+  [39;22m[90m     private function configureRateLimiting(): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         RateLimiter::for('two-factor', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(6)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 67: ConcatRemoveLeft - ID: 907095af830bee45[39m
+[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            $throttleKey = Str::transliterate('|' . $request->ip());[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 67: ConcatRemoveLeft - ID: eaf5f5e192459f75[39m
+[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            $throttleKey = Str::transliterate($request->ip());[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 67: ConcatRemoveRight - ID: 8efe11c724d3ba46[39m
+[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . $request->ip());[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 67: ConcatRemoveRight - ID: 12dcf2be41a48871[39m
+[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|');[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 67: ConcatSwitchSides - ID: 20b8a5b293e7fb67[39m
+[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            $throttleKey = Str::transliterate('|' . Str::lower($request->input(Fortify::username())) . $request->ip());[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 67: ConcatSwitchSides - ID: 7c291d1d4ff17368[39m
+[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($request->session()->get('login.id'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            $throttleKey = Str::transliterate($request->ip() . (Str::lower($request->input(Fortify::username())) . '|'));[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 69: DecrementInteger - ID: 724a714b2cc2486b[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(4)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 69: IncrementInteger - ID: 8a42cf8b57c805e9[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('login', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(6)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 72: RemoveMethodCall - ID: f1694e7b9c517f0d[39m
+[39;1m
+  [39;22m[90m             $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());[39m[39;1m
+  [39;22m[90m             return Limit::perMinute(5)->by($throttleKey);[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[31m-        RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[31m-            $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[31m-        });[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 75: DecrementInteger - ID: 81ec22bc5ddec75a[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(9)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 75: IncrementInteger - ID: a33ad3bfa84713d3[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(11)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: TernaryNegated - ID: 79b68a2688c5af30[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by((!$credentialId ? $credentialId : $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: ConcatRemoveLeft - ID: a82f82f9c08cda51[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by('|' . $request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: ConcatRemoveLeft - ID: 879c4981cc103954[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by($request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: ConcatRemoveRight - ID: 7c424d52a74d8d66[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . $request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: ConcatRemoveRight - ID: e7f1ad849482be93[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|');[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: ConcatSwitchSides - ID: 0e9b6f103505f88b[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by('|' . ($credentialId ?: $request->session()->getId()) . $request->ip());[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Providers/FortifyServiceProvider.php [39;22m[90m > Line 76: ConcatSwitchSides - ID: be9dbc1ee1fa86c5[39m
+[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m         RateLimiter::for('passkeys', function (Request $request) {[39m[39;1m
+  [39;22m[90m             $credentialId = $request->input('credential.id');[39m[39;1m
+  [39;22m[31m-            return Limit::perMinute(10)->by(($credentialId ?: $request->session()->getId()) . '|' . $request->ip());[39m[39;1m
+  [39;22m[32m+            return Limit::perMinute(10)->by($request->ip() . (($credentialId ?: $request->session()->getId()) . '|'));[39m[39;1m
+  [39;22m[90m         });[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 31: RemoveArrayItem - ID: 0baaf7716bd5d8c5[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $created_at[39m[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[31m-#[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[32m+#[Fillable(['email', 'password'])][39m[39;1m
+  [39;22m[90m #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 31: RemoveArrayItem - ID: e69e721c27cf7812[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $created_at[39m[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[31m-#[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[32m+#[Fillable(['name', 'password'])][39m[39;1m
+  [39;22m[90m #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 31: RemoveArrayItem - ID: 1c22788fecaf82d4[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $created_at[39m[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[31m-#[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[32m+#[Fillable(['name', 'email'])][39m[39;1m
+  [39;22m[90m #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 32: RemoveArrayItem - ID: 51a6c75d79ff7c9a[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[90m #[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[31m-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[32m+#[Hidden(['two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[90m     /** @use HasFactory<UserFactory> */[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 32: RemoveArrayItem - ID: fc6cf67967a0f02a[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[90m #[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[31m-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[32m+#[Hidden(['password', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[90m     /** @use HasFactory<UserFactory> */[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 32: RemoveArrayItem - ID: 764969bba6e5a414[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[90m #[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[31m-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[32m+#[Hidden(['password', 'two_factor_secret', 'remember_token'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[90m     /** @use HasFactory<UserFactory> */[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;101;1m UNCOVERED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 32: RemoveArrayItem - ID: 0058c0625489ca61[39m
+[39;1m
+  [39;22m[90m  * @property Carbon|null $updated_at[39m[39;1m
+  [39;22m[90m  */[39m[39;1m
+  [39;22m[90m #[Fillable(['name', 'email', 'password'])][39m[39;1m
+  [39;22m[31m-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])][39m[39;1m
+  [39;22m[32m+#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes'])][39m[39;1m
+  [39;22m[90m class User extends Authenticatable implements MustVerifyEmail, PasskeyUser[39m[39;1m
+  [39;22m[90m {[39m[39;1m
+  [39;22m[90m     /** @use HasFactory<UserFactory> */[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 46: RemoveArrayItem - ID: 4f44daaaf5814d4d[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function casts(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['email_verified_at' => 'datetime', 'password' => 'hashed'];[39m[39;1m
+  [39;22m[32m+        return ['password' => 'hashed'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the user's initials[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 56: TrueToFalse - ID: cf99eacd7c4bbfb3[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[32m+        $initials = Str::initials($this->name, false);[39m[39;1m
+  [39;22m[90m         return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 58: TernaryNegated - ID: 67530fc468993a4f[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return !(Str::length($initials) > 1) ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 58: GreaterToGreaterOrEqual - ID: 17fb1e1ee4ca6635[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) >= 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 58: GreaterToSmallerOrEqual - ID: e5f9944463defe09[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) <= 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 58: DecrementInteger - ID: 4ead0653a513b3d5[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 0 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 58: IncrementInteger - ID: 7a8e95013579901b[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 2 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: DecrementInteger - ID: cf77e7da9ef11f3e[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, -1, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: DecrementInteger - ID: efbb51bc43b5ed98[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, 0, 0) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: DecrementInteger - ID: 7894fe18652d3fbc[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -2) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: IncrementInteger - ID: ac17d1a6e76ac7fd[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, 1, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: IncrementInteger - ID: 604193d144df7801[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, 0, 2) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: IncrementInteger - ID: b5330cc158d73784[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -0) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: ConcatRemoveLeft - ID: 79a90e12e4e7331c[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: ConcatRemoveRight - ID: 70f5ab8a38eecfe5[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Models/User.php [39;22m[90m > Line 59: ConcatSwitchSides - ID: f51dbfe117a4414f[39m
+[39;1m
+  [39;22m[90m     public function initials(): string[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         $initials = Str::initials($this->name, true);[39m[39;1m
+  [39;22m[31m-        return Str::length($initials) > 1 ? Str::substr($initials, 0, 1) . Str::substr($initials, -1) : $initials;[39m[39;1m
+  [39;22m[32m+        return Str::length($initials) > 1 ? Str::substr($initials, -1) . Str::substr($initials, 0, 1) : $initials;[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Livewire/Actions/Logout.php [39;22m[90m > Line 19: RemoveMethodCall - ID: bd3b8e0a4dcf672c[39m
+[39;1m
+  [39;22m[90m     public function __invoke(): Redirector|RedirectResponse[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Auth::guard('web')->logout();[39m[39;1m
+  [39;22m[31m-        Session::invalidate();[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         Session::regenerateToken();[39m[39;1m
+  [39;22m[90m         return redirect('/');[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Livewire/Actions/Logout.php [39;22m[90m > Line 20: RemoveMethodCall - ID: 388a03ad4cddbc31[39m
+[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Auth::guard('web')->logout();[39m[39;1m
+  [39;22m[90m         Session::invalidate();[39m[39;1m
+  [39;22m[31m-        Session::regenerateToken();[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         return redirect('/');[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/ResetUserPassword.php [39;22m[90m > Line 21: RemoveMethodCall - ID: a763608875b84515[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function reset(User $user, array $input): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        Validator::make($input, ['password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         $user->forceFill(['password' => $input['password']])->save();[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/ResetUserPassword.php [39;22m[90m > Line 22: RemoveArrayItem - ID: 26355a394068c436[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function reset(User $user, array $input): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        Validator::make($input, ['password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[32m+        Validator::make($input, [])->validate();[39m[39;1m
+  [39;22m[90m         $user->forceFill(['password' => $input['password']])->save();[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/ResetUserPassword.php [39;22m[90m > Line 25: RemoveMethodCall - ID: ed9b4fff6ced87a9[39m
+[39;1m
+  [39;22m[90m     public function reset(User $user, array $input): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Validator::make($input, ['password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[31m-        $user->forceFill(['password' => $input['password']])->save();[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/ResetUserPassword.php [39;22m[90m > Line 26: RemoveArrayItem - ID: a99fcd09b200cee5[39m
+[39;1m
+  [39;22m[90m     public function reset(User $user, array $input): void[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[90m         Validator::make($input, ['password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[31m-        $user->forceFill(['password' => $input['password']])->save();[39m[39;1m
+  [39;22m[32m+        $user->forceFill([])->save();[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/CreateNewUser.php [39;22m[90m > Line 22: RemoveMethodCall - ID: 46c492107a42a267[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function create(array $input): User[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        Validator::make($input, [...$this->profileRules(), 'password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[32m+        [39m[39;1m
+  [39;22m[90m         return User::create(['name' => $input['name'], 'email' => $input['email'], 'password' => $input['password']]);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/CreateNewUser.php [39;22m[90m > Line 23: RemoveArrayItem - ID: f77380667979aa06[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function create(array $input): User[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        Validator::make($input, [...$this->profileRules(), 'password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[32m+        Validator::make($input, ['password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[90m         return User::create(['name' => $input['name'], 'email' => $input['email'], 'password' => $input['password']]);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Actions/Fortify/CreateNewUser.php [39;22m[90m > Line 24: RemoveArrayItem - ID: c8dd09b24b2c9ffe[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     public function create(array $input): User[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        Validator::make($input, [...$this->profileRules(), 'password' => $this->passwordRules()])->validate();[39m[39;1m
+  [39;22m[32m+        Validator::make($input, [...$this->profileRules()])->validate();[39m[39;1m
+  [39;22m[90m         return User::create(['name' => $input['name'], 'email' => $input['email'], 'password' => $input['password']]);[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 31: RemoveArrayItem - ID: 7b99bf0585cec253[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function nameRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'max:255'];[39m[39;1m
+  [39;22m[32m+        return ['string', 'max:255'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate user emails.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 31: RemoveArrayItem - ID: d75afa1f2ab305a6[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function nameRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'max:255'];[39m[39;1m
+  [39;22m[32m+        return ['required', 'max:255'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate user emails.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 31: RemoveArrayItem - ID: c0465871eacc33be[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function nameRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'max:255'];[39m[39;1m
+  [39;22m[32m+        return ['required', 'string'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate user emails.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 31: AlwaysReturnEmptyArray - ID: 98506ce967a0862a[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function nameRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'max:255'];[39m[39;1m
+  [39;22m[32m+        return [];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate user emails.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 41: AlwaysReturnEmptyArray - ID: 9b1ce1c26483a71f[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function emailRules(?int $userId = null): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[32m+        return [];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 42: RemoveArrayItem - ID: 2b3969c3b5b7a1bd[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function emailRules(?int $userId = null): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[32m+        return ['string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 43: RemoveArrayItem - ID: 9f402cb2befcb776[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function emailRules(?int $userId = null): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[32m+        return ['required', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 44: RemoveArrayItem - ID: 9cac2e08cd4a715b[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function emailRules(?int $userId = null): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[32m+        return ['required', 'string', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 45: RemoveArrayItem - ID: 239cc443efebd395[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function emailRules(?int $userId = null): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[32m+        return ['required', 'string', 'email', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/ProfileValidationRules.php [39;22m[90m > Line 46: RemoveArrayItem - ID: b6b1a62fe0aeb187[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function emailRules(?int $userId = null): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'email', 'max:255', $userId === null ? Rule::unique(User::class) : Rule::unique(User::class)->ignore($userId)];[39m[39;1m
+  [39;22m[32m+        return ['required', 'string', 'email', 'max:255'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 17: RemoveArrayItem - ID: f67aa64f565d3099[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function passwordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[32m+        return ['string', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate the current password.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 17: RemoveArrayItem - ID: 4fb77b231d68ee09[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function passwordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[32m+        return ['required', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate the current password.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 17: RemoveArrayItem - ID: 77941f3ec17a0ce1[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function passwordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[32m+        return ['required', 'string', 'confirmed'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate the current password.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 17: RemoveArrayItem - ID: 9ba982d517b6ea90[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function passwordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[32m+        return ['required', 'string', Password::default()];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate the current password.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 17: AlwaysReturnEmptyArray - ID: 078170f02f4d0744[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function passwordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', Password::default(), 'confirmed'];[39m[39;1m
+  [39;22m[32m+        return [];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m     /**[39m[39;1m
+  [39;22m[90m      * Get the validation rules used to validate the current password.[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 27: RemoveArrayItem - ID: a4f867d016251de8[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function currentPasswordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'current_password'];[39m[39;1m
+  [39;22m[32m+        return ['string', 'current_password'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[39;41;1m UNTESTED [39;49;22m[39;1m [39;22m[39;1mapp/Concerns/PasswordValidationRules.php [39;22m[90m > Line 27: RemoveArrayItem - ID: da3b76f4396b9345[39m
+[39;1m
+  [39;22m[90m      */[39m[39;1m
+  [39;22m[90m     protected function currentPasswordRules(): array[39m[39;1m
+  [39;22m[90m     {[39m[39;1m
+  [39;22m[31m-        return ['required', 'string', 'current_password'];[39m[39;1m
+  [39;22m[32m+        return ['required', 'current_password'];[39m[39;1m
+  [39;22m[90m     }[39m[39;1m
+  [39;22m[90m }[39m[39;1m
+  [39;22m[39;1m
+[39;22m
+[39;1m  [39;22m[90mMutations:[39m[39;1m [39;22m[31;1m57 untested[39;22m[90m,[39m[39m [39m[33;1m20 uncovered[39;22m[90m,[39m[39m [39m[32;1m26 tested[39;22m
+[39m  [39m[90mScore:[39m[39m     [39m[39m25.24%[39m
+[39m  [39m[90mDuration:[39m[39m  [39m[39m64.01s[39m
+

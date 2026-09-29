@@ -1,0 +1,43 @@
+name: Set up Laravel app
+description: PHP, Composer install, .env and app key; optionally Node + built assets.
+inputs:
+  php-version:
+    description: PHP version
+    default: "8.4"
+  coverage:
+    description: Coverage driver for setup-php (none, pcov, xdebug)
+    default: none
+  node:
+    description: Install Node dependencies and build assets ("true"/"false")
+    default: "true"
+runs:
+  using: composite
+  steps:
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        tools: composer:v2
+        coverage: ${{ inputs.coverage }}
+
+    - name: Composer install
+      shell: bash
+      run: composer install --no-interaction --no-progress --prefer-dist
+
+    - if: inputs.node == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+        cache: npm
+
+    - if: inputs.node == 'true'
+      name: Build assets
+      shell: bash
+      run: npm ci && npm run build
+
+    - name: Environment
+      shell: bash
+      run: |
+        [ -f .env ] || cp .env.example .env
+        php artisan key:generate --no-interaction
+        # The factory checkout lives inside the workspace; keep it out of commits.
+        echo ".factory/" >> .git/info/exclude

@@ -1,0 +1,44 @@
+name: dependabot-automerge
+
+# Reusable. Call from a pull_request workflow. Enables auto-merge on Dependabot
+# patch/minor PRs; GitHub merges once required checks pass. Majors are ignored in
+# dependabot.yml and stay manual. Uses the factory App token so the merge push
+# triggers deploy (a GITHUB_TOKEN merge would not). Dependabot-triggered runs only
+# see Dependabot secrets, so adopt.sh stores the App secrets there too.
+
+on:
+  workflow_call:
+    secrets:
+      FACTORY_APP_ID:
+        required: true
+      FACTORY_APP_PRIVATE_KEY:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  automerge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ github.token }}
+
+      - id: token
+        if: steps.meta.outputs.update-type == 'version-update:semver-patch' || steps.meta.outputs.update-type == 'version-update:semver-minor'
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+
+      - if: steps.token.outputs.token != ''
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr merge "$URL" --auto --squash
+          echo "Auto-merge enabled (${{ steps.meta.outputs.update-type }}); resolved-by: deterministic" >> "$GITHUB_STEP_SUMMARY"

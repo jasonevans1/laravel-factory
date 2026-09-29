@@ -1,0 +1,1 @@
+# Classes the mutation loop skips (one FQCN per line), e.g. equivalent mutants only.

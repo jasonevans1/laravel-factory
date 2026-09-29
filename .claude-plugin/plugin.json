@@ -1,0 +1,11 @@
+{
+  "name": "laravel-factory",
+  "version": "1.0.0",
+  "description": "Control-loop software factory for Laravel apps: deterministic-first actuator skills and a protected-paths guard for unattended CI runs.",
+  "author": {
+    "name": "Jason Evans"
+  },
+  "repository": "https://github.com/jasonevans1/laravel-factory",
+  "license": "MIT",
+  "keywords": ["laravel", "control-loops", "ci", "larastan", "mutation-testing"]
+}

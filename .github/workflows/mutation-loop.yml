@@ -1,0 +1,174 @@
+name: mutation-loop
+
+# Mutation-score ratchet (reusable, weekly). Claude is required here: there is no
+# deterministic way to write a test that kills a mutant. Everything around it is
+# deterministic.
+#   sensor      pest --mutate --everything (whole app), parsed by scripts/mutation.php
+#               (per-class runs omit --everything: it overrides --class)
+#   controller  class with the most escaped mutants (skip list: .github/agent-memory/mutation-skip.txt)
+#   actuator    Claude + kill-mutants skill: tests/ only, source changes forbidden
+#   ratchet     escaped set after is a strict subset of before (mutation IDs)
+# Test PRs are where Goodhart creeps in: never auto-merged.
+
+on:
+  workflow_call:
+    inputs:
+      factory-ref:
+        type: string
+        default: v1
+      factory-repo:
+        type: string
+        default: jasonevans1/laravel-factory
+      php-version:
+        type: string
+        default: "8.4"
+      claude-timeout-minutes:
+        type: string
+        default: "45"
+    secrets:
+      FACTORY_APP_ID:
+        required: true
+      FACTORY_APP_PRIVATE_KEY:
+        required: true
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: mutation-loop
+  cancel-in-progress: false
+
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      FACTORY_OUT: ${{ github.workspace }}/../factory-out
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.factory-repo }}
+          ref: ${{ inputs.factory-ref }}
+          path: .factory
+          persist-credentials: false
+
+      - id: gate
+        uses: ./.factory/.github/actions/loop-gate
+        with:
+          label: mutation-loop
+          token: ${{ github.token }}
+
+      - if: steps.gate.outputs.run == 'true'
+        uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+          coverage: pcov
+
+      - id: target
+        if: steps.gate.outputs.run == 'true'
+        name: Sensor + controller
+        run: |
+          mkdir -p "$FACTORY_OUT"
+          vendor/bin/pest --mutate --everything --parallel --colors=never > "$FACTORY_OUT/full.txt" 2>&1 || true
+          php .factory/scripts/mutation.php parse "$FACTORY_OUT/full.txt" > "$FACTORY_OUT/full.json"
+          output=$(php .factory/scripts/mutation.php next "$FACTORY_OUT/full.json" .github/agent-memory/mutation-skip.txt)
+          echo "Mutation score: $(jq .score "$FACTORY_OUT/full.json")%" >> "$GITHUB_STEP_SUMMARY"
+          echo "$output" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "class=$(sed -n 's/^Next: \([^ ]*\).*/\1/p' <<<"$output")" >> "$GITHUB_OUTPUT"
+
+      - id: before
+        if: steps.target.outputs.class != ''
+        name: Baseline for the target class
+        env:
+          CLASS: ${{ steps.target.outputs.class }}
+        run: |
+          vendor/bin/pest --mutate --class="$CLASS" --colors=never > "$FACTORY_OUT/before.txt" 2>&1 || true
+          php .factory/scripts/mutation.php parse "$FACTORY_OUT/before.txt" > "$FACTORY_OUT/before.json"
+          jq -r '.escaped[] | "- \(.file):\(.line) \(.mutator) [\(.status)] id=\(.id)"' "$FACTORY_OUT/before.json" > "$FACTORY_OUT/survivors.md"
+          grep -A12 -F -f <(jq -r '.escaped[].id' "$FACTORY_OUT/before.json") "$FACTORY_OUT/before.txt" \
+            | sed 's/\x1b\[[0-9;]*m//g' > "$FACTORY_OUT/survivor-diffs.txt" || true
+
+      - id: auth
+        if: steps.target.outputs.class != ''
+        uses: ./.factory/.github/actions/app-auth
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+
+      - id: branch
+        if: steps.target.outputs.class != ''
+        env:
+          CLASS: ${{ steps.target.outputs.class }}
+        run: |
+          slug=$(tr '[:upper:]' '[:lower:]' <<<"${CLASS//\\/-}")
+          git checkout -b "mutation/$slug-$GITHUB_RUN_ID"
+          echo "name=mutation/$slug-$GITHUB_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - id: claude
+        if: steps.target.outputs.class != ''
+        uses: ./.factory/.github/actions/claude
+        with:
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          protected-paths: app/,bootstrap/,config/,database/,resources/,routes/,public/,composer.json,composer.lock,phpstan.neon,phpstan-baseline.php
+          timeout-minutes: ${{ inputs.claude-timeout-minutes }}
+          prompt: |
+            Use the laravel-factory:kill-mutants skill.
+            Target class: ${{ steps.target.outputs.class }}
+            Surviving mutants: ${{ env.FACTORY_OUT }}/survivors.md (diffs in ${{ env.FACTORY_OUT }}/survivor-diffs.txt).
+            Write or extend tests under tests/ only. Do not change application code.
+            You are running unattended in CI: do not ask for approval, do not commit, do not push.
+
+      - id: post
+        if: steps.target.outputs.class != ''
+        name: Guards + ratchet (deterministic)
+        env:
+          CLASS: ${{ steps.target.outputs.class }}
+          BASE: ${{ steps.branch.outputs.base }}
+        run: |
+          git add -A
+          git commit -m "test: kill surviving mutants in $CLASS" || { echo "::error::Claude made no changes."; exit 1; }
+          php .factory/scripts/diff-guard.php --base "$BASE" --allow 'tests/*'
+          php .factory/scripts/test-integrity.php "$BASE" HEAD --strict
+          vendor/bin/pest
+          vendor/bin/pest --mutate --class="$CLASS" --colors=never > "$FACTORY_OUT/after.txt" 2>&1 || true
+          php .factory/scripts/mutation.php parse "$FACTORY_OUT/after.txt" > "$FACTORY_OUT/after.json"
+          php .factory/scripts/mutation.php ratchet "$FACTORY_OUT/before.json" "$FACTORY_OUT/after.json" | tee "$FACTORY_OUT/ratchet.txt"
+
+      - name: PR body
+        if: steps.target.outputs.class != ''
+        env:
+          CLASS: ${{ steps.target.outputs.class }}
+          CLAUDE_MSG: ${{ steps.claude.outputs.final-message }}
+        run: |
+          {
+            echo "## Mutation ratchet: $CLASS"
+            echo
+            cat "$FACTORY_OUT/ratchet.txt"
+            echo "Class score: $(jq .score "$FACTORY_OUT/before.json")% -> $(jq .score "$FACTORY_OUT/after.json")%"
+            echo
+            echo "Tests only; application code unchanged (diff guard). Review the new assertions: they are the product."
+            echo
+            echo "### Claude's notes"; echo; cat "$CLAUDE_MSG" 2>/dev/null
+            echo; echo "resolved-by: claude"
+          } > "$FACTORY_OUT/pr-body.md"
+
+      - if: steps.target.outputs.class != ''
+        uses: ./.factory/.github/actions/open-pr
+        with:
+          token: ${{ steps.auth.outputs.token }}
+          bot-login: ${{ steps.auth.outputs.bot-login }}
+          branch: ${{ steps.branch.outputs.name }}
+          title: "test: kill surviving mutants in ${{ steps.target.outputs.class }}"
+          body-file: ${{ env.FACTORY_OUT }}/pr-body.md
+          label: mutation-loop
+          resolved-by: claude
+          automerge-eligible: "false"

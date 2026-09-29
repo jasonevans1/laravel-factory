@@ -1,0 +1,24 @@
+# Managed by laravel-factory adopt.sh. Edit the factory, not this file.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  ci:
+    uses: jasonevans1/laravel-factory/.github/workflows/tests.yml@__FACTORY_REF__
+    with:
+      factory-ref: __FACTORY_REF__
+      e2e: __E2E__
+  lint:
+    if: github.event_name == 'pull_request'
+    uses: jasonevans1/laravel-factory/.github/workflows/lint.yml@__FACTORY_REF__
+    with:
+      factory-ref: __FACTORY_REF__
