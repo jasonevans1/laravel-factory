@@ -111,7 +111,7 @@ jobs:
           cp phpstan-baseline.php "$FACTORY_OUT/old-baseline.php"
           echo "start=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-          [ -f rector.php ] && vendor/bin/rector process "$TARGET" --no-progress-bar || true
+          if [ -f rector.php ]; then vendor/bin/rector process "$TARGET" --no-progress-bar || true; fi
           $PHPSTAN --generate-baseline=phpstan-baseline.php --allow-empty-baseline || true
           if git diff --quiet -- "$TARGET"; then
             echo "Rector changed nothing."; git checkout -- .; exit 0
@@ -159,7 +159,8 @@ jobs:
         run: |
           $PHPSTAN --generate-baseline=phpstan-baseline.php --allow-empty-baseline || true
           vendor/bin/pint "$TARGET"
-          git add -A && git commit -qm "larastan: fix errors in $TARGET" || true
+          git add -A
+          git commit -qm "larastan: fix errors in $TARGET" || true
           if php .factory/scripts/larastan-ratchet-check.php "$FACTORY_OUT/old-baseline.php" phpstan-baseline.php \
              && php .factory/scripts/diff-guard.php --base "$PRE" \
                   --allow "$TARGET" --allow phpstan-baseline.php \
