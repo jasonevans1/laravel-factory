@@ -1,7 +1,8 @@
 name: larastan-loop
 
 # Larastan baseline ratchet (reusable). Set point: phpstan-baseline.php empty.
-#   sensor/controller  scripts/larastan-loop-next.php     (deprecations first, then most errors)
+#   sensor/controller  scripts/larastan-loop-next.php     (deprecations first, then most errors;
+#                      files with an open larastan-loop-deferred issue are skipped)
 #   actuator           Rector on the target file          (deterministic)
 #   fallback           Claude + fix-larastan-baseline     (only for errors Rector left)
 #   ratchet            scripts/larastan-ratchet-check.php (baseline may only shrink)
@@ -38,6 +39,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  issues: read
 
 concurrency:
   group: larastan-loop
@@ -52,12 +54,12 @@ jobs:
       PHPSTAN: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
       FACTORY_TEST_CMD: ${{ inputs.test-command }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: ${{ inputs.factory-repo }}
           ref: ${{ inputs.factory-ref }}
@@ -73,7 +75,13 @@ jobs:
       - id: target
         if: steps.gate.outputs.run == 'true'
         name: Sensor + controller
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          # Files with an open deferral issue are skipped, not retried.
+          FACTORY_SKIP=$(gh issue list --state open --label larastan-loop-deferred --json title \
+            --jq '[.[].title | capture("^larastan-loop: (?<p>\\S+)").p] | join(" ")')
+          export FACTORY_SKIP
           output=$(php .factory/scripts/larastan-loop-next.php phpstan-baseline.php)
           echo "$output" | tee -a "$GITHUB_STEP_SUMMARY"
           echo "file=$(sed -n 's/^Next: //p' <<<"$output")" >> "$GITHUB_OUTPUT"
@@ -103,7 +111,7 @@ jobs:
           cp phpstan-baseline.php "$FACTORY_OUT/old-baseline.php"
           echo "start=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-          [ -f rector.php ] && vendor/bin/rector process "$TARGET" --no-progress-bar || true
+          if [ -f rector.php ]; then vendor/bin/rector process "$TARGET" --no-progress-bar || true; fi
           $PHPSTAN --generate-baseline=phpstan-baseline.php --allow-empty-baseline || true
           if git diff --quiet -- "$TARGET"; then
             echo "Rector changed nothing."; git checkout -- .; exit 0
@@ -151,7 +159,8 @@ jobs:
         run: |
           $PHPSTAN --generate-baseline=phpstan-baseline.php --allow-empty-baseline || true
           vendor/bin/pint "$TARGET"
-          git add -A && git commit -qm "larastan: fix errors in $TARGET" || true
+          git add -A
+          git commit -qm "larastan: fix errors in $TARGET" || true
           if php .factory/scripts/larastan-ratchet-check.php "$FACTORY_OUT/old-baseline.php" phpstan-baseline.php \
              && php .factory/scripts/diff-guard.php --base "$PRE" \
                   --allow "$TARGET" --allow phpstan-baseline.php \
@@ -173,8 +182,9 @@ jobs:
           CLAUDE_MSG: ${{ steps.claude.outputs.final-message }}
         run: |
           if [ "$(git rev-parse HEAD)" = "$START" ]; then
-            echo "::error::No verified progress on $TARGET this run."
-            exit 1
+            echo "::warning::No verified progress on $TARGET; deferring it."
+            echo "deferred=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           resolved=deterministic
           [ "$CLAUDE_OK" = "true" ] && resolved=claude
@@ -197,6 +207,28 @@ jobs:
           } > "$body"
           echo "resolved=$resolved" >> "$GITHUB_OUTPUT"
           echo "flagged=$flagged" >> "$GITHUB_OUTPUT"
+
+      - name: Defer the target (no progress)
+        if: steps.result.outputs.deferred == 'true'
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+          TARGET: ${{ steps.target.outputs.file }}
+          CLAUDE_MSG: ${{ steps.claude.outputs.final-message }}
+        run: |
+          {
+            echo "## Larastan loop deferred: $TARGET"
+            echo
+            echo "Neither Rector nor Claude made verified progress on this file: the fix needs other files"
+            echo "(often a model's relation or property types), or it failed the ratchet, guards or tests."
+            echo "Fix it by hand, then close this issue so the loop can pick the file again."
+            echo
+            echo "### Baselined errors"; echo; cat "$FACTORY_OUT/errors.md"
+            if [ -s "$CLAUDE_MSG" ]; then echo; echo "### Claude's notes"; echo; cat "$CLAUDE_MSG"; fi
+          } > "$FACTORY_OUT/deferred.md"
+          gh label create larastan-loop-deferred --color D93F0B --description "Larastan fix needs manual work" 2>/dev/null || true
+          gh issue create --title "larastan-loop: $TARGET needs manual fix" \
+            --body-file "$FACTORY_OUT/deferred.md" --label larastan-loop-deferred
+          echo "resolved-by: deferred ($TARGET)" >> "$GITHUB_STEP_SUMMARY"
 
       - id: pr
         if: steps.result.outputs.resolved != ''

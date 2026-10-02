@@ -158,6 +158,8 @@ check "larastan next: total" 0 'Total: 8' -- php "$s/larastan-loop-next.php" "$t
 check "larastan next: then most errors" 0 'Next: app/Big.php' -- php "$s/larastan-loop-next.php" "$tmp/shrunk.php"
 check "larastan next: no baseline file" 0 '^Total: 0$' -- php "$s/larastan-loop-next.php" "$tmp/none.php"
 check "larastan next: errors for file" 0 '\[return.missing\] x5 Big' -- php "$s/larastan-loop-next.php" "$tmp/old.php" --errors-for app/Big.php
+check "larastan next: skips deferred" 0 'Next: app/Small.php' -- env FACTORY_SKIP="app/Big.php" php "$s/larastan-loop-next.php" "$tmp/shrunk.php"
+check "larastan next: all deferred" 0 'All remaining files are deferred' -- env FACTORY_SKIP="app/Big.php app/Small.php" php "$s/larastan-loop-next.php" "$tmp/shrunk.php"
 check "ratchet: shrink passes" 0 'Baseline: 8 -> 7' -- php "$s/larastan-ratchet-check.php" "$tmp/old.php" "$tmp/shrunk.php"
 check "ratchet: new entry fails even if total shrinks" 1 'New or increased baseline entry: app/Other.php' -- php "$s/larastan-ratchet-check.php" "$tmp/old.php" "$tmp/swapped.php"
 check "ratchet: no progress fails" 1 'did not shrink' -- php "$s/larastan-ratchet-check.php" "$tmp/old.php" "$tmp/same.php"
