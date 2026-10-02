@@ -29,11 +29,11 @@ jobs:
   pest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: ${{ inputs.factory-repo }}
           ref: ${{ inputs.factory-ref }}
@@ -64,7 +64,7 @@ jobs:
         run: cp .deprecations/count .deprecations/main-count
 
       - if: github.event_name == 'push' && github.ref_name == github.event.repository.default_branch
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: .deprecations/main-count
           key: deprecations-${{ github.sha }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Restore main's count
         if: github.event_name == 'pull_request'
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: .deprecations/main-count
           key: deprecations-${{ github.event.pull_request.base.sha }}
@@ -95,11 +95,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: ${{ inputs.factory-repo }}
           ref: ${{ inputs.factory-ref }}
@@ -126,7 +126,7 @@ jobs:
           npx playwright test --project=chromium
 
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: playwright-report/

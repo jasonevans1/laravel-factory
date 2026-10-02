@@ -5,8 +5,9 @@
 //   Total: <n>
 //   Next: <path>
 // Files with deprecation errors (identifier *.deprecated) go first, then the
-// file with the most baselined errors. With --errors-for, lists that file's
-// baselined errors instead (the actuator's work order).
+// file with the most baselined errors. Paths in FACTORY_SKIP (space-separated,
+// from open deferral issues) are never picked. With --errors-for, lists that
+// file's baselined errors instead (the actuator's work order).
 
 $args = array_slice($argv, 1);
 $errorsFor = null;
@@ -46,6 +47,10 @@ uksort($byPath, fn ($a, $b) => [$byPath[$b]['deprecated'], $byPath[$b]['count'],
     <=> [$byPath[$a]['deprecated'], $byPath[$a]['count'], $b]);
 
 echo 'Total: '.array_sum(array_column($byPath, 'count'))."\n";
-if ($byPath) {
-    echo 'Next: '.array_key_first($byPath)."\n";
+$skip = preg_split('/\s+/', (string) getenv('FACTORY_SKIP'), -1, PREG_SPLIT_NO_EMPTY);
+$candidates = array_diff(array_keys($byPath), $skip);
+if ($candidates) {
+    echo 'Next: '.reset($candidates)."\n";
+} elseif ($byPath) {
+    echo "All remaining files are deferred.\n";
 }

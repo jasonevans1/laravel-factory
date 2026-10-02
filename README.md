@@ -14,7 +14,7 @@ whether its own work succeeded.
 | Loop | Set point | Deterministic actuator | Claude | PR auto-merge |
 |---|---|---|---|---|
 | `security-loop` | 0 `composer audit` advisories | `composer update` → widen within major → tests | only if tests fail after the upgrade | lockfile-only fixes, once trusted |
-| `larastan-loop` | empty `phpstan-baseline.php` | Rector on the target file | only for errors Rector left | unflagged PRs, once trusted |
+| `larastan-loop` | empty `phpstan-baseline.php` | Rector on the target file | only for errors Rector left; no progress opens a deferral issue and skips the file | unflagged PRs, once trusted |
 | Dependabot + `dependency-fix` | dependencies current (minor/patch) | Dependabot grouped PRs | only when a Dependabot PR's CI fails | Dependabot patch/minor; Claude fixes never |
 | `mutation-loop` | escaped mutants shrink | none possible | required: writes tests (tests/ only) | never |
 | `prod-error-loop` | 0 unresolved app errors | none possible | required: repro test, then fix | never |

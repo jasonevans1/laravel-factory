@@ -2,7 +2,7 @@ name: dependency-fix
 
 # Claude fallback for Dependabot (reusable, scheduled; not Dependabot-triggered,
 # so it has normal secrets).
-#   sensor      open Dependabot PRs with a failed check, not yet attempted
+#   sensor      open Dependabot PRs with a failed ci check, not yet attempted
 #   controller  the oldest one
 #   actuator    Claude + dependency-fix skill: fix app code, never the manifests
 #   post-check  tests + diff guard + strict test-integrity (deterministic)
@@ -63,7 +63,7 @@ jobs:
                  --json number,headRefName,headRefOid,createdAt,labels,statusCheckRollup \
             | jq -c '[.[]
                 | select([.labels[].name] | index("dependency-fix-attempted") | not)
-                | select([.statusCheckRollup[] | (.conclusion // .state)] | index("FAILURE"))]
+                | select([.statusCheckRollup[] | select(.workflowName == "ci") | (.conclusion // .state)] | index("FAILURE"))]
               | sort_by(.createdAt) | .[0] // empty')
           if [ -z "$pr" ]; then
             echo "No failing, unattempted Dependabot PRs." | tee -a "$GITHUB_STEP_SUMMARY"
@@ -73,20 +73,20 @@ jobs:
           branch=$(jq -r .headRefName <<<"$pr")
           sha=$(jq -r .headRefOid <<<"$pr")
           echo "Next: #$number ($branch)" | tee -a "$GITHUB_STEP_SUMMARY"
-          run_id=$(gh run list --repo "$GITHUB_REPOSITORY" --commit "$sha" --status failure \
+          run_id=$(gh run list --repo "$GITHUB_REPOSITORY" --commit "$sha" --workflow ci --status failure \
                      --json databaseId --jq '.[0].databaseId')
           gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed | tail -n 300 > "$FACTORY_OUT/ci-failure.log" || true
           { echo "number=$number"; echo "branch=$branch"; } >> "$GITHUB_OUTPUT"
 
       - if: steps.target.outputs.number != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.target.outputs.branch }}
           fetch-depth: 0
           persist-credentials: false
 
       - if: steps.target.outputs.number != ''
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.factory-repo }}
           ref: ${{ inputs.factory-ref }}
@@ -130,20 +130,37 @@ jobs:
             Test command: ${{ inputs.test-command }}
             You are running unattended in CI: do not ask for approval, do not commit, do not push.
 
-      - name: Commit + post-check (deterministic)
+      - id: commit
+        name: Commit + post-check (deterministic)
         if: steps.target.outputs.number != ''
         env:
           BASE: ${{ steps.mark.outputs.base }}
         run: |
           git add -A
-          git commit -m "fix: adapt app code to dependency upgrade" || { echo "::error::Claude made no changes."; exit 1; }
+          if git diff --cached --quiet; then
+            echo "::warning::Claude made no changes; leaving the PR for manual review."
+            exit 0
+          fi
+          git commit -m "fix: adapt app code to dependency upgrade"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
           php .factory/scripts/diff-guard.php --base "$BASE" \
             --deny composer.json --deny composer.lock --deny package.json --deny package-lock.json --deny phpstan.neon
           php .factory/scripts/test-integrity.php "$BASE" HEAD --strict
           $FACTORY_TEST_CMD
 
+      - name: Report no fix
+        if: steps.target.outputs.number != '' && steps.commit.outputs.changed != 'true'
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+          NUMBER: ${{ steps.target.outputs.number }}
+          CLAUDE_MSG: ${{ steps.claude.outputs.final-message }}
+        run: |
+          { echo "### dependency-fix"; echo; cat "$CLAUDE_MSG" 2>/dev/null; echo; echo "resolved-by: none (no changes; review manually)"; } > "$FACTORY_OUT/comment.md"
+          gh pr comment "$NUMBER" --body-file "$FACTORY_OUT/comment.md"
+          echo "resolved-by: none (#$NUMBER)" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Push to the Dependabot branch
-        if: steps.target.outputs.number != ''
+        if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ steps.auth.outputs.token }}
           BRANCH: ${{ steps.target.outputs.branch }}

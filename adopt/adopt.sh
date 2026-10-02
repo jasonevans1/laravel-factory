@@ -197,7 +197,7 @@ else
   gh api -X DELETE "repos/$repo/automated-security-fixes" > /dev/null 2>&1 || true
 
   labels=(
-    "security-loop|0E8A16" "security-loop-deferred|D93F0B" "larastan-loop|0E8A16"
+    "security-loop|0E8A16" "security-loop-deferred|D93F0B" "larastan-loop|0E8A16" "larastan-loop-deferred|D93F0B"
     "needs-type-review|FBCA04" "mutation-loop|0E8A16" "prod-error-loop|0E8A16"
     "prod-error-deferred|D93F0B" "test-weakened|B60205" "dependency-fix-attempted|C5DEF5"
   )
