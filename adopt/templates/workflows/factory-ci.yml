@@ -16,9 +16,11 @@ jobs:
     uses: jasonevans1/laravel-factory/.github/workflows/tests.yml@__FACTORY_REF__
     with:
       factory-ref: __FACTORY_REF__
+      php-version: "__PHP_VERSION__"
       e2e: __E2E__
   lint:
     if: github.event_name == 'pull_request'
     uses: jasonevans1/laravel-factory/.github/workflows/lint.yml@__FACTORY_REF__
     with:
       factory-ref: __FACTORY_REF__
+      php-version: "__PHP_VERSION__"

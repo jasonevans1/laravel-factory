@@ -97,7 +97,7 @@ What adopt does:
 - adds the deprecation rules to `phpstan.neon`;
 - if PHPStan reports errors, baselines them so the Larastan loop can ratchet
   them down (with zero errors, the lint dampener keeps it that way);
-- writes caller workflows pinned to the factory version, plus `dependabot.yml`;
+- writes caller workflows pinned to the factory version and PHP version (`--php-version`, default 8.4), plus `dependabot.yml`;
 - enables the plugin in `.claude/settings.json`;
 - creates `.github/agent-memory/`;
 - on GitHub: sets secrets (App secrets for Dependabot too), turns on
