@@ -7,6 +7,7 @@
 #   --local                  local files only; skip all GitHub settings
 #   --deploy-url <url>       enable the Laravel Cloud deploy workflow (production URL)
 #   --error-sensor <cmd>     enable the prod-error loop; <cmd> prints normalised error JSON
+#   --php-version <x.y>      PHP version for CI and loop workflows     (default: 8.4)
 #   --force                  overwrite existing files that aren't factory-managed
 #
 # GitHub step reads secrets from the environment:
@@ -26,6 +27,7 @@ ref=v1
 local_only=false
 deploy_url=
 error_sensor=
+php_version=8.4
 force=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -33,12 +35,15 @@ while [[ $# -gt 0 ]]; do
     --local) local_only=true; shift ;;
     --deploy-url) deploy_url=$2; shift 2 ;;
     --error-sensor) error_sensor=$2; shift 2 ;;
+    --php-version) php_version=$2; shift 2 ;;
     --force) force=true; shift ;;
-    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,21p' "$0"; exit 0 ;;
     -*) echo "unknown option: $1" >&2; exit 2 ;;
     *) app=$1; shift ;;
   esac
 done
+
+[[ "$php_version" =~ ^[0-9]+\.[0-9]+$ ]] || { echo "--php-version must look like 8.4, got: $php_version" >&2; exit 2; }
 
 cd "$app"
 [[ -f artisan && -f composer.json ]] || { echo "Not a Laravel app: $(pwd)" >&2; exit 1; }
@@ -61,8 +66,8 @@ install() {
 say "Workflows (factory $ref)"
 e2e=false
 compgen -G "playwright.config.*" > /dev/null && e2e=true
-placeholders=$(jq -n --arg ref "$ref" --arg e2e "$e2e" --arg sensor "$error_sensor" \
-  '{"__FACTORY_REF__": $ref, "__E2E__": $e2e, "__ERROR_SENSOR__": ($sensor | tojson)}')
+placeholders=$(jq -n --arg ref "$ref" --arg e2e "$e2e" --arg sensor "$error_sensor" --arg php "$php_version" \
+  '{"__FACTORY_REF__": $ref, "__PHP_VERSION__": $php, "__E2E__": $e2e, "__ERROR_SENSOR__": ($sensor | tojson)}')
 for wf in "$tpl"/workflows/*.yml; do
   name=$(basename "$wf")
   [[ "$name" == factory-prod-error-loop.yml && -z "$error_sensor" ]] && continue

@@ -18,6 +18,7 @@ jobs:
     uses: jasonevans1/laravel-factory/.github/workflows/larastan-loop.yml@__FACTORY_REF__
     with:
       factory-ref: __FACTORY_REF__
+      php-version: "__PHP_VERSION__"
     secrets:
       FACTORY_APP_ID: ${{ secrets.FACTORY_APP_ID }}
       FACTORY_APP_PRIVATE_KEY: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
