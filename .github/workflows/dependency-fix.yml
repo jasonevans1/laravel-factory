@@ -4,6 +4,8 @@ name: dependency-fix
 # so it has normal secrets).
 #   sensor      open Dependabot PRs with a failed ci check, not yet attempted
 #   controller  the oldest one
+#   align       deterministic: vite-plus bumped without its vite-plus-core alias
+#               (Dependabot never moves npm: aliases) -> fix manifests, push, stop
 #   actuator    Claude + dependency-fix skill: fix app code, never the manifests
 #   post-check  tests + diff guard + strict test-integrity (deterministic)
 # One attempt per PR (label dependency-fix-attempted), so a PR Claude can't fix
@@ -93,11 +95,6 @@ jobs:
           path: .factory
           persist-credentials: false
 
-      - if: steps.target.outputs.number != ''
-        uses: ./.factory/.github/actions/setup-app
-        with:
-          php-version: ${{ inputs.php-version }}
-
       - id: auth
         if: steps.target.outputs.number != ''
         uses: ./.factory/.github/actions/app-auth
@@ -105,8 +102,38 @@ jobs:
           app-id: ${{ secrets.FACTORY_APP_ID }}
           private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
 
-      - id: mark
+      # Before setup-app: a stale alias fails `npm run build` there. Not marked
+      # attempted, so if CI still fails, Claude gets its one try next night.
+      - id: align
         if: steps.target.outputs.number != ''
+        name: Align vite-plus-core alias with vite-plus (deterministic)
+        env:
+          GH_TOKEN: ${{ steps.auth.outputs.token }}
+          BRANCH: ${{ steps.target.outputs.branch }}
+          NUMBER: ${{ steps.target.outputs.number }}
+        run: |
+          v=$(jq -r '.dependencies["vite-plus"] // .devDependencies["vite-plus"] // empty' package.json)
+          [ -n "$v" ] && sed -i -E "s#(npm:@voidzero-dev/vite-plus-core@)[^\"]+#\1${v}#g" package.json
+          if git diff --quiet package.json; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          git commit -am "build(deps): align vite-plus-core alias with vite-plus $v"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push origin "HEAD:$BRANCH"
+          gh pr comment "$NUMBER" --body "### dependency-fix
+
+          Aligned the \`vite\` alias to \`@voidzero-dev/vite-plus-core@$v\` (Dependabot bumps \`vite-plus\` but not \`npm:\` aliases). resolved-by: align"
+          echo "resolved-by: align (#$NUMBER)" >> "$GITHUB_STEP_SUMMARY"
+
+      - if: steps.align.outputs.proceed == 'true'
+        uses: ./.factory/.github/actions/setup-app
+        with:
+          php-version: ${{ inputs.php-version }}
+
+      - id: mark
+        if: steps.align.outputs.proceed == 'true'
         name: Mark attempted (one attempt per PR)
         env:
           GH_TOKEN: ${{ steps.auth.outputs.token }}
@@ -117,7 +144,7 @@ jobs:
           echo "base=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - id: claude
-        if: steps.target.outputs.number != ''
+        if: steps.align.outputs.proceed == 'true'
         uses: ./.factory/.github/actions/claude
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -132,7 +159,7 @@ jobs:
 
       - id: commit
         name: Commit + post-check (deterministic)
-        if: steps.target.outputs.number != ''
+        if: steps.align.outputs.proceed == 'true'
         env:
           BASE: ${{ steps.mark.outputs.base }}
         run: |
@@ -149,7 +176,7 @@ jobs:
           $FACTORY_TEST_CMD
 
       - name: Report no fix
-        if: steps.target.outputs.number != '' && steps.commit.outputs.changed != 'true'
+        if: steps.align.outputs.proceed == 'true' && steps.commit.outputs.changed != 'true'
         env:
           GH_TOKEN: ${{ steps.auth.outputs.token }}
           NUMBER: ${{ steps.target.outputs.number }}
